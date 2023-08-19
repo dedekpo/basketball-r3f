@@ -92,11 +92,11 @@ export default function Joystick() {
 			<div
 				ref={joystickRef}
 				className="z-50 absolute bottom-[10%] w-[70%] h-[70%]"
-			></div>
+			/>
 			<button
 				className="z-50 absolute border-2 rounded-full flex items-center justify-center bottom-[15%] right-[10%] w-[20%] h-[20%]"
-				onMouseDown={handleButtonPress}
-				onMouseUp={handleButtonRelease}
+				onTouchStart={handleButtonPress}
+				onTouchEnd={handleButtonRelease}
 			>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
