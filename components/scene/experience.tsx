@@ -46,7 +46,7 @@ export default function Experience() {
 						antialias: isMobile ? false : true,
 					}}
 					shadows={isMobile ? false : true}
-					// dpr={isMobile ? 0.9 : 1}
+					dpr={isMobile ? 0.9 : 1}
 					camera={{
 						position: [-1.5, 0.7, 0.5],
 						fov: 45,
