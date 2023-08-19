@@ -9,6 +9,9 @@ import dynamic from "next/dynamic";
 const Menu = dynamic(() => import("@/components/interface/menu"), {
 	ssr: false,
 });
+const Joystick = dynamic(() => import("@/components/interface/joystick"), {
+	ssr: false,
+});
 
 export default function Home() {
 	return (
@@ -20,6 +23,7 @@ export default function Home() {
 			<Score />
 			<LightSwitch />
 			<Footer />
+			<Joystick />
 		</div>
 	);
 }

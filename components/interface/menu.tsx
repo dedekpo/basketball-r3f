@@ -3,6 +3,7 @@
 import { useGameStore } from "@/lib/stores";
 import { onClickSound, onHoverSound } from "@/lib/utils";
 import { useProgress } from "@react-three/drei";
+import { isMobile } from "react-device-detect";
 
 export default function Menu() {
 	const { progress } = useProgress();
@@ -24,6 +25,28 @@ export default function Menu() {
 					onPointerEnter={onHoverSound}
 					onClick={() => {
 						onClickSound();
+						setGameMode("match");
+					}}
+				>
+					<p className="text-right hover:text-[#FE2844] drop-shadow-[0_3px_3px_rgba(43,42,58,1)]">
+						Quick Match
+					</p>
+				</button>
+				<button
+					onPointerEnter={onHoverSound}
+					onClick={() => {
+						onClickSound();
+						setGameMode("challenge");
+					}}
+				>
+					<p className="text-right hover:text-[#FE2844] drop-shadow-[0_3px_3px_rgba(43,42,58,1)]">
+						Tournament
+					</p>
+				</button>
+				<button
+					onPointerEnter={onHoverSound}
+					onClick={() => {
+						onClickSound();
 						setGameMode("challenge");
 					}}
 				>
@@ -39,7 +62,7 @@ export default function Menu() {
 					}}
 				>
 					<p className="text-right hover:text-[#FE2844] drop-shadow-[0_3px_3px_rgba(43,42,58,1)]">
-						Training
+						Practice
 					</p>
 				</button>
 				<button
@@ -72,6 +95,30 @@ function LoadingScreen({
 		setGameMode("menu");
 	}
 
+	const toggleFullscreen = () => {
+		if (document.fullscreenElement) {
+			document.exitFullscreen();
+		} else {
+			document.documentElement.requestFullscreen().catch((err) => {
+				console.error("Error toggling fullscreen:", err);
+			});
+		}
+	};
+
+	const checkOrientation = () => {
+		if (window.screen.orientation) {
+			if (!window.screen.orientation.lock) return;
+
+			if (window.screen.orientation.type.includes("portrait")) {
+				window.screen.orientation.lock("landscape").catch((err) => {
+					console.error("Error locking landscape orientation:", err);
+				});
+			} else {
+				window.screen.orientation.unlock();
+			}
+		}
+	};
+
 	return (
 		<div className="absolute flex items-center justify-center top-0 left-0 h-screen w-screen bg-gray-900 z-50 text-center">
 			{progress < 100 ? (
@@ -81,7 +128,13 @@ function LoadingScreen({
 			) : (
 				<button
 					onPointerEnter={onHoverSound}
-					onClick={handleStartGame}
+					onClick={() => {
+						handleStartGame();
+						if (isMobile) {
+							toggleFullscreen();
+							checkOrientation();
+						}
+					}}
 					className="text-white font-bold text-7xl border-2 py-4 w-[50%] hover:text-[#FE2844] hover:border-[#FE2844]"
 				>
 					Play

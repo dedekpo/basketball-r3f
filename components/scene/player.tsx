@@ -1,172 +1,255 @@
-import { useAnimations, useGLTF, useKeyboardControls } from "@react-three/drei";
+import { useKeyboardControls } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
-import { CapsuleCollider, RigidBody, vec3 } from "@react-three/rapier";
-import { useEffect, useRef } from "react";
-import { GLTF } from "three-stdlib";
+import {
+	ConeCollider,
+	CapsuleCollider,
+	RigidBody,
+	vec3,
+} from "@react-three/rapier";
 import * as THREE from "three";
-import { useGameStore } from "@/lib/stores";
-import { leftHoop, rightHoop } from "@/lib/config";
-import ShotMetter from "./shot-metter";
+import {
+	playerRef,
+	playerMeshRef,
+	player2MeshRef,
+	ballRef,
+	useBallStore,
+	usePlayer1Store,
+	useGameStore,
+	useJoystickStore,
+} from "@/lib/stores";
+import { SHOT_METTER_VELOCITY, leftHoop, rightHoop } from "@/lib/config";
+import ShotPlayer1Metter from "./shot-metter";
+import PlayerMesh from "./models/player-mesh";
+import {
+	getRandomNumber,
+	movePlayer,
+	playAudio,
+	rotatePlayer,
+} from "@/lib/utils";
+import { useEffect } from "react";
 
-type GLTFResult = GLTF & {
-	nodes: {
-		Ch09: THREE.SkinnedMesh;
-		mixamorig6Hips: THREE.Bone;
-	};
-	materials: {
-		Ch09_body: THREE.MeshPhysicalMaterial;
-	};
-};
-
-const MOVEMENT_SPEED = 0.003;
-const MAX_VEL = 0.8;
-const RUN_VEL = 0.4;
-
-const modelEuler = new THREE.Euler();
-const modelQuat = new THREE.Quaternion();
-const pivot = new THREE.Object3D();
+const auxVector = new THREE.Vector3();
 
 export default function Player() {
-	const { nodes, materials, animations } = useGLTF(
-		"/models/timmy2.glb"
-	) as GLTFResult;
-
-	const {
-		playerRef,
-		playerMeshRef,
-		playerHasBall,
-		characterState,
-		setCharacterState,
-		setPlayerHasBall,
-		setCurrentHoop,
-	} = useGameStore((state) => ({
-		playerRef: state.playerRef,
-		playerMeshRef: state.playerMeshRef,
-		playerHasBall: state.playerHasBall,
+	const { characterState, setCharacterState } = usePlayer1Store((state) => ({
 		characterState: state.characterState,
 		setCharacterState: state.setCharacterState,
-		setPlayerHasBall: state.setPlayerHasBall,
-		setCurrentHoop: state.setCurrentHoop,
 	}));
 
-	const { actions } = useAnimations<any>(animations, playerMeshRef);
+	const { setPlayerWithBall, currentHoop, setCurrentHoop } = useBallStore(
+		(state) => ({
+			setPlayerWithBall: state.setPlayerWithBall,
+			currentHoop: state.currentHoop,
+			setCurrentHoop: state.setCurrentHoop,
+		})
+	);
 
-	useEffect(() => {
-		actions[characterState]?.reset().fadeIn(0.2).play();
-		return () => {
-			actions[characterState]?.fadeOut(0.2);
-		};
-	}, [characterState]);
+	const { gameMode } = useGameStore((state) => ({
+		gameMode: state.gameMode,
+	}));
 
-	useEffect(() => {
-		if (playerHasBall && actions) {
-			actions["Dribbling"]?.reset().fadeIn(0.1).play();
-		}
-		return () => {
-			actions["Dribbling"]?.fadeOut(0.1);
-		};
-	}, [playerHasBall]);
+	const { direction, jump } = useJoystickStore((state) => ({
+		direction: state.direction,
+		jump: state.jump,
+	}));
 
 	const [, get] = useKeyboardControls();
 
+	useEffect(() => {
+		playerRef.current!.collider(1).setEnabled(false);
+	}, []);
+
 	const handleMovement = (delta: number) => {
-		const { forward, backward, left, right } = get();
+		const { forwardP1, backwardP1, leftP1, rightP1, jumpP1 } = get();
+
+		const forward = forwardP1 || direction.up;
+		const backward = backwardP1 || direction.down;
+		const left = leftP1 || direction.left;
+		const right = rightP1 || direction.right;
+		const jumpPressed = jumpP1 || jump;
 
 		if (
 			!playerMeshRef.current ||
-			playerMeshRef.current.isShooting ||
-			!playerRef.current
+			!playerRef.current ||
+			playerMeshRef.current.isShooting
 		) {
-			setCharacterState("Idle");
 			return;
 		}
+		if (
+			jumpPressed &&
+			!playerMeshRef.current.hasBall &&
+			!playerMeshRef.current!.isJumping
+		) {
+			setCharacterState("Block");
+			playerMeshRef.current!.isJumping = true;
 
-		const impulse = { x: 0, y: 0, z: 0 };
+			setTimeout(() => {
+				playerRef.current!.collider(1).setEnabled(true);
+			}, 300);
 
-		const linvel = playerRef.current?.linvel();
-
-		// Move player
-		if (right) {
-			impulse.x += MOVEMENT_SPEED;
-		}
-		if (left) {
-			impulse.x -= MOVEMENT_SPEED;
-		}
-		if (backward) {
-			impulse.z += MOVEMENT_SPEED;
-		}
-		if (forward) {
-			impulse.z -= MOVEMENT_SPEED;
+			setTimeout(() => {
+				playerMeshRef.current!.isJumping = false;
+				playerRef.current!.collider(1).setEnabled(false);
+			}, 1000);
 		}
 
-		// Adjust velocity if player is moving above speed limit - this happens mostly when running diagonally
-		const playerVelocity = vec3(linvel).length();
-		if (playerVelocity > MAX_VEL) {
-			playerRef.current.setLinvel(
-				vec3(linvel).normalize().multiplyScalar(MAX_VEL),
-				true
+		if (playerMeshRef.current.IAShouldGoTo) {
+			let right = false;
+			let left = false;
+			let backward = false;
+			let forward = false;
+			const playerPosition = vec3(playerRef.current?.translation());
+
+			if (
+				playerPosition.distanceTo(playerMeshRef.current.IAShouldGoTo) <
+				0.22
+			) {
+				playerMeshRef.current.IAShouldGoTo = undefined;
+				return;
+			}
+			const directionToGo = auxVector.subVectors(
+				playerMeshRef.current.IAShouldGoTo,
+				playerPosition
 			);
-		}
-
-		playerRef.current?.applyImpulse(impulse, true);
-
-		// Getting moving directions
-		if (forward) {
-			// Apply camera rotation to character
-			modelEuler.y = pivot.rotation.y + Math.PI;
-		} else if (backward) {
-			// Apply camera rotation to character model
-			modelEuler.y = pivot.rotation.y;
-		} else if (left) {
-			// Apply camera rotation to character model
-			modelEuler.y = pivot.rotation.y - Math.PI / 2;
-		} else if (right) {
-			// Apply camera rotation to character model
-			modelEuler.y = pivot.rotation.y + Math.PI / 2;
-		}
-		if (forward && left) {
-			// Apply camera rotation to character model
-			modelEuler.y = pivot.rotation.y + Math.PI / 4 + Math.PI;
-		} else if (forward && right) {
-			// Apply camera rotation to character model
-			modelEuler.y = pivot.rotation.y - Math.PI / 4 + Math.PI;
-		} else if (backward && left) {
-			// Apply camera rotation to character model
-			modelEuler.y = pivot.rotation.y - Math.PI / 4;
-		} else if (backward && right) {
-			// Apply camera rotation to character model
-			modelEuler.y = pivot.rotation.y + Math.PI / 4;
-		}
-
-		modelQuat.setFromEuler(modelEuler);
-		playerMeshRef.current.quaternion.rotateTowards(modelQuat, delta * 10);
-
-		if (Math.abs(linvel.x) > RUN_VEL || Math.abs(linvel.z) > RUN_VEL) {
-			if (characterState !== "Running") {
-				setCharacterState("Running");
+			if (directionToGo.x > 0) {
+				right = true;
 			}
-		} else {
-			if (characterState !== "Idle") {
-				setCharacterState("Idle");
+			if (directionToGo.x < 0) {
+				left = true;
 			}
+			if (directionToGo.z > 0) {
+				backward = true;
+			}
+			if (directionToGo.z < 0) {
+				forward = true;
+			}
+			movePlayer(
+				playerRef,
+				playerMeshRef,
+				right,
+				left,
+				forward,
+				backward,
+				characterState,
+				setCharacterState
+			);
+			rotatePlayer(
+				0,
+				right,
+				left,
+				forward,
+				backward,
+				playerMeshRef,
+				delta
+			);
+			return;
 		}
+		movePlayer(
+			playerRef,
+			playerMeshRef,
+			right,
+			left,
+			forward,
+			backward,
+			characterState,
+			setCharacterState
+		);
+		rotatePlayer(0, right, left, forward, backward, playerMeshRef, delta);
 	};
 
 	function handleCurrentHoop() {
-		const playerPosition = vec3(playerRef.current?.translation());
+		if (
+			(gameMode === "challenge" || gameMode === "free") &&
+			playerMeshRef.current?.hasBall
+		) {
+			const playerPosition = vec3(playerRef.current?.translation());
 
-		const distanceToLeftHoop = playerPosition.distanceTo(leftHoop);
-		const distanceToRightHoop = playerPosition.distanceTo(rightHoop);
+			const distanceToLeftHoop = playerPosition.distanceTo(leftHoop);
+			const distanceToRightHoop = playerPosition.distanceTo(rightHoop);
 
-		if (distanceToLeftHoop < distanceToRightHoop) {
-			setCurrentHoop(leftHoop);
+			if (distanceToLeftHoop < distanceToRightHoop) {
+				setCurrentHoop(leftHoop);
+				return;
+			}
+			setCurrentHoop(rightHoop);
 			return;
 		}
-		setCurrentHoop(rightHoop);
+		if (
+			(gameMode === "match" || gameMode === "tournament") &&
+			playerMeshRef.current?.hasBall
+		) {
+			setCurrentHoop(rightHoop);
+		}
+	}
+
+	function handleShotMeter(delta: number) {
+		const { jumpP1 } = get();
+		const jumpPressed = jumpP1 || jump;
+
+		if (!playerMeshRef.current?.hasBall || !playerMeshRef.current) {
+			return;
+		}
+		// if (!playerMeshRef.current) {
+		// 	return;
+		// }
+
+		if (jumpPressed) {
+			if (!playerMeshRef.current.isShooting) {
+				playerMeshRef.current.isShooting = true;
+				setCharacterState("Shoot");
+				playerMeshRef.current.lookAt(
+					vec3({
+						x: currentHoop.x,
+						y: 0.3,
+						z: currentHoop.z,
+					})
+				);
+			}
+
+			if (playerMeshRef.current.isIncreasing === undefined) {
+				playerMeshRef.current.isIncreasing = true;
+			}
+
+			if ((playerMeshRef.current.shotProgress || 0) > 1) {
+				playerMeshRef.current.isIncreasing = false;
+			}
+
+			if (
+				(playerMeshRef.current.shotProgress || 0) < 0 &&
+				ballRef.current
+			) {
+				ballRef.current.shouldShot = true;
+				ballRef.current.shotProgress =
+					playerMeshRef.current.shotProgress;
+				playerMeshRef.current.isShooting = false;
+				playerMeshRef.current.isIncreasing = true;
+				playerMeshRef.current.shotProgress = 0;
+				return;
+			}
+
+			if (playerMeshRef.current.isShooting) {
+				const factor = playerMeshRef.current.isIncreasing ? 1 : -1;
+
+				playerMeshRef.current.shotProgress =
+					(playerMeshRef.current.shotProgress || 0) +
+					delta * SHOT_METTER_VELOCITY * factor;
+			}
+
+			return;
+		}
+
+		if (playerMeshRef.current.isShooting && ballRef.current) {
+			ballRef.current.shouldShot = true;
+			ballRef.current.shotProgress = playerMeshRef.current.shotProgress;
+			playerMeshRef.current.isShooting = false;
+			playerMeshRef.current.isIncreasing = true;
+			playerMeshRef.current.shotProgress = 0;
+		}
 	}
 
 	useFrame(({ camera }, delta) => {
 		handleMovement(delta);
+		handleShotMeter(delta * 0.1);
 		handleCurrentHoop();
 		if (playerRef.current) {
 			camera.lookAt(
@@ -182,41 +265,71 @@ export default function Player() {
 			<RigidBody
 				ref={playerRef}
 				name="player"
+				mass={1}
 				colliders={false}
-				position={[-1, 0.22, 0]}
 				enabledRotations={[false, false, false]}
+				position={[-1, 0.22, 0]}
 				onCollisionEnter={({ target, other }) => {
 					if (
 						target.rigidBodyObject?.name === "player" &&
 						other.rigidBodyObject?.name === "ball"
 					) {
-						if (!playerHasBall) {
-							setPlayerHasBall(true);
+						if (gameMode === "challenge" || gameMode === "free") {
+							playerMeshRef.current!.hasBall = true;
+							playAudio("grab");
+							setPlayerWithBall(0);
+							return;
+						}
+						if (gameMode === "match" || gameMode === "tournament") {
+							if (
+								!playerMeshRef.current?.hasBall &&
+								!player2MeshRef.current?.isShooting &&
+								!ballRef.current?.cantSteal
+							) {
+								if (
+									playerMeshRef.current!.isJumping &&
+									!player2MeshRef.current!.hasBall
+								) {
+									// Player blocked
+									ballRef.current?.applyImpulse(
+										{
+											x:
+												getRandomNumber(-0.1, 0.1) /
+												1000,
+											y: getRandomNumber(0, 0.1) / 1000,
+											z:
+												getRandomNumber(-0.1, 0.1) /
+												1000,
+										},
+										true
+									);
+									playAudio("block");
+									return;
+								}
+
+								player2MeshRef.current!.hasBall = false;
+								playerMeshRef.current!.hasBall = true;
+								playAudio("grab");
+								setPlayerWithBall(0);
+								ballRef.current!.cantSteal = true;
+								setTimeout(() => {
+									ballRef.current!.cantSteal = false;
+								}, 1000);
+							}
+							return;
 						}
 					}
 				}}
 			>
 				<CapsuleCollider args={[0.09, 0.1]} position={[0, 0.19, 0]} />
-				<group ref={playerMeshRef} name="Scene">
-					<group
-						name="Armature"
-						rotation={[Math.PI / 2, 0, 0]}
-						scale={0.0022}
-					>
-						<skinnedMesh
-							castShadow
-							name="Ch09"
-							geometry={nodes.Ch09.geometry}
-							material={materials.Ch09_body}
-							skeleton={nodes.Ch09.skeleton}
-						/>
-						<primitive object={nodes.mixamorig6Hips} />
-					</group>
-				</group>
-				<ShotMetter />
+				<ConeCollider
+					args={[0.17, 0.15]}
+					position={[0, 0.6, 0]}
+					rotation={[0, 0, Math.PI]}
+				/>
+				<PlayerMesh />
+				<ShotPlayer1Metter />
 			</RigidBody>
 		</>
 	);
 }
-
-useGLTF.preload("/models/timmy2.glb");

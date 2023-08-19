@@ -10,19 +10,21 @@ export default function Challenge() {
 	const [timeLeft, setTimeLeft] = useState(60);
 	const [isCountingDown, setIsCountingDown] = useState(false);
 
-	const { gameMode, gameScore, resetGameScore } = useGameStore((state) => ({
-		gameMode: state.gameMode,
-		gameScore: state.gameScore,
-		resetGameScore: state.resetGameScore,
-	}));
+	const { gameMode, player1Score, resetGameScore } = useGameStore(
+		(state) => ({
+			gameMode: state.gameMode,
+			player1Score: state.player1Score,
+			resetGameScore: state.resetGameScore,
+		})
+	);
 
 	useEffect(() => {
 		if (timeLeft === 0) {
 			// End game
 			setIsCountingDown(false);
 			playAudio("referee");
-			if (gameScore > highestScore) {
-				setHighestScore(gameScore);
+			if (player1Score > highestScore) {
+				setHighestScore(player1Score);
 			}
 		}
 		const interval = setInterval(() => {
@@ -62,7 +64,7 @@ export default function Challenge() {
 									d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"
 								/>
 							</svg>
-							<span>Score: {gameScore}</span>
+							<span>Score: {player1Score}</span>
 						</div>
 						<div className="flex items-center gap-3">
 							<svg

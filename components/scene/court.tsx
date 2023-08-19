@@ -2,8 +2,8 @@ import * as THREE from "three";
 import React, { useRef } from "react";
 import { useGLTF } from "@react-three/drei";
 import { GLTF } from "three-stdlib";
-import { CuboidCollider, RigidBody } from "@react-three/rapier";
-import { useGameStore } from "@/lib/stores";
+import { CuboidCollider, RigidBody, vec3 } from "@react-three/rapier";
+import { player2MeshRef, playerMeshRef, useGameStore } from "@/lib/stores";
 import { playAudio } from "@/lib/utils";
 
 type GLTFResult = GLTF & {
@@ -54,36 +54,63 @@ export default function CourtModel(props: JSX.IntrinsicElements["group"]) {
 		"/models/basketball_court.glb"
 	) as GLTFResult;
 
-	const { setGameScore } = useGameStore((state) => ({
-		setGameScore: state.setGameScore,
-	}));
+	const { gameMode, setPlayer1Score, setPlayer2Score } = useGameStore(
+		(state) => ({
+			gameMode: state.gameMode,
+			setPlayer1Score: state.setPlayer1Score,
+			setPlayer2Score: state.setPlayer2Score,
+		})
+	);
 
 	const pointsRef = useRef({
 		canScore: true,
 	});
 
-	function handleScore() {
-		if(pointsRef.current.canScore){
-
-			setGameScore();
-playAudio("ball-hit-net");
-playAudio("score");
-const isPlayerGoingToCelebrate = Math.random() > 0.8;
-if (isPlayerGoingToCelebrate) {
-setTimeout(() => {
-if (Math.random() < 0.8) {
-playAudio("male-win-1");
-} else {
-playAudio("male-win-2");
-}
-}, 500);
-}	
-pointsRef.current.canScore = false;
-}
-setTimeout(() => {
-	pointsRef.current.canScore = true;
-}, 300)
-return																										
+	function handleScore(hoopSide: "left" | "right") {
+		if (pointsRef.current.canScore) {
+			if (gameMode === "match" || gameMode === "tournament") {
+				if (hoopSide === "right") {
+					setPlayer1Score();
+					if (playerMeshRef.current) {
+						playerMeshRef.current.IAShouldGoTo = vec3({
+							x: -1,
+							y: 0,
+							z: 0,
+						});
+					}
+				}
+				if (hoopSide === "left") {
+					setPlayer2Score();
+					if (player2MeshRef.current) {
+						player2MeshRef.current.IAShouldGoTo = vec3({
+							x: 1,
+							y: 0,
+							z: 0,
+						});
+					}
+				}
+			}
+			if (gameMode === "challenge" || gameMode === "free") {
+				setPlayer1Score();
+			}
+			playAudio("ball-hit-net");
+			playAudio("score");
+			const isPlayerGoingToCelebrate = Math.random() > 0.8;
+			if (isPlayerGoingToCelebrate) {
+				setTimeout(() => {
+					if (Math.random() < 0.8) {
+						playAudio("male-win-1");
+					} else {
+						playAudio("male-win-2");
+					}
+				}, 500);
+			}
+			pointsRef.current.canScore = false;
+		}
+		setTimeout(() => {
+			pointsRef.current.canScore = true;
+		}, 300);
+		return;
 	}
 
 	return (
@@ -95,6 +122,7 @@ return
 					geometry={nodes.Object_4.geometry}
 					material={materials.Outer_Floor}
 				/>
+				{/* Floor */}
 				<RigidBody name="floor" type="fixed">
 					<mesh
 						castShadow
@@ -104,40 +132,38 @@ return
 					/>
 					<CuboidCollider args={[2.7, 0.1, 2.05]} />
 				</RigidBody>
-				<RigidBody colliders="trimesh" type="fixed">
-					<mesh
-						castShadow
-						receiveShadow
-						geometry={nodes.Object_6.geometry}
-						material={materials.Wall}
-					/>
-				</RigidBody>
-				<RigidBody colliders={false} type="fixed">
-					<mesh
-						castShadow
-						receiveShadow
-						geometry={nodes.Object_7.geometry}
-						material={materials.Support_Pillars}
-					/>
-					<CuboidCollider
-						args={[0.01, 2, 1.96]}
-						position={[-2.77, 0.4, 0]}
-					/>
-					<CuboidCollider
-						args={[0.01, 2, 1.96]}
-						position={[2.77, 0.4, 0]}
-					/>
-					<CuboidCollider
-						args={[0.01, 2, 2.77]}
-						position={[0, 0.4, 1.95]}
-						rotation={[0, Math.PI / 2, 0]}
-					/>
-					<CuboidCollider
-						args={[0.01, 2, 2.77]}
-						position={[0, 0.4, -1.95]}
-						rotation={[0, Math.PI / 2, 0]}
-					/>
-				</RigidBody>
+				{/* Walls */}
+				<CuboidCollider
+					args={[0.01, 2, 1.96]}
+					position={[-2.57, 2, 0]}
+				/>
+				<CuboidCollider
+					args={[0.01, 2, 1.96]}
+					position={[2.57, 2, 0]}
+				/>
+				<CuboidCollider
+					args={[0.01, 2, 2.77]}
+					position={[0, 2, 1.7]}
+					rotation={[0, Math.PI / 2, 0]}
+				/>
+				<CuboidCollider
+					args={[0.01, 2, 2.77]}
+					position={[0, 2, -1.7]}
+					rotation={[0, Math.PI / 2, 0]}
+				/>
+				<mesh
+					castShadow
+					receiveShadow
+					geometry={nodes.Object_6.geometry}
+					material={materials.Wall}
+				/>
+				<mesh
+					castShadow
+					receiveShadow
+					geometry={nodes.Object_7.geometry}
+					material={materials.Support_Pillars}
+				/>
+
 				<mesh
 					castShadow
 					receiveShadow
@@ -187,22 +213,20 @@ return
 					material={materials.Mesh}
 				/>
 			</group>
-			<RigidBody colliders="trimesh" type="fixed">
-				<group position={[2.113, 0.313, -0.794]}>
-					<mesh
-						castShadow
-						receiveShadow
-						geometry={nodes.Object_21.geometry}
-						material={materials.Bench_Top}
-					/>
-					<mesh
-						castShadow
-						receiveShadow
-						geometry={nodes.Object_22.geometry}
-						material={materials.Bench_Bottom}
-					/>
-				</group>
-			</RigidBody>
+			<group position={[2.113, 0.313, -0.794]}>
+				<mesh
+					castShadow
+					receiveShadow
+					geometry={nodes.Object_21.geometry}
+					material={materials.Bench_Top}
+				/>
+				<mesh
+					castShadow
+					receiveShadow
+					geometry={nodes.Object_22.geometry}
+					material={materials.Bench_Bottom}
+				/>
+			</group>
 			{/* Aro */}
 			<RigidBody name="rim" colliders="trimesh" type="fixed">
 				<group position={[-2.24, 0.781, 0]}>
@@ -237,14 +261,22 @@ return
 				args={[0.01, 0.06, 0.06]}
 				position={[1.9, 0.98, 0]}
 				rotation={[0, 0, Math.PI / 2]}
-				onIntersectionExit={handleScore}
+				onIntersectionExit={({ other }) => {
+					if (other.rigidBodyObject?.name === "ball") {
+						handleScore("right");
+					}
+				}}
 			/>
 			<CuboidCollider
 				sensor
 				args={[0.01, 0.06, 0.06]}
 				position={[-1.9, 0.98, 0]}
 				rotation={[0, 0, Math.PI / 2]}
-				onIntersectionExit={handleScore}
+				onIntersectionExit={({ other }) => {
+					if (other.rigidBodyObject?.name === "ball") {
+						handleScore("left");
+					}
+				}}
 			/>
 			<mesh
 				castShadow
@@ -253,24 +285,20 @@ return
 				material={materials["Material.002"]}
 				position={[0, 0.135, 0]}
 			/>
-			<RigidBody colliders="trimesh" type="fixed">
-				<mesh
-					castShadow
-					receiveShadow
-					geometry={nodes.Object_19.geometry}
-					material={materials.Light_Pillars}
-					position={[-0.005, 0.1, -0.078]}
-				/>
-			</RigidBody>
-			<RigidBody colliders="trimesh" type="fixed">
-				<mesh
-					castShadow
-					receiveShadow
-					geometry={nodes.Object_24.geometry}
-					material={materials.Dust_Bin}
-					position={[2.113, 0.313, -0.794]}
-				/>
-			</RigidBody>
+			<mesh
+				castShadow
+				receiveShadow
+				geometry={nodes.Object_19.geometry}
+				material={materials.Light_Pillars}
+				position={[-0.005, 0.1, -0.078]}
+			/>
+			<mesh
+				castShadow
+				receiveShadow
+				geometry={nodes.Object_24.geometry}
+				material={materials.Dust_Bin}
+				position={[2.113, 0.313, -0.794]}
+			/>
 			<mesh
 				castShadow
 				receiveShadow
