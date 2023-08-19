@@ -44,14 +44,27 @@ export default function Joystick() {
 
 		nipple.on("move", (evt, data) => {
 			// Update the direction state using Zustand's setDirection
-			const { force, direction } = data;
+			const { angle, force } = data;
 
 			if (force > 0.5) {
+				console.log(
+					angle.degree <= 90 && angle.degree >= 270 ? true : false
+				);
 				setDirection({
-					right: direction.x === "right",
-					left: direction.x === "left",
-					up: direction.y === "up",
-					down: direction.y === "down",
+					right:
+						angle.degree <= 60 || angle.degree >= 300
+							? true
+							: false,
+					left:
+						angle.degree > 120 && angle.degree < 240 ? true : false,
+					up:
+						angle.degree >= 30 && angle.degree <= 150
+							? true
+							: false,
+					down:
+						angle.degree > 210 && angle.degree <= 330
+							? true
+							: false,
 				});
 			}
 		});
@@ -81,10 +94,10 @@ export default function Joystick() {
 	}
 
 	return (
-		<div>
+		<div className="z-50">
 			<div
 				ref={joystickRef}
-				className="absolute bottom-[10%] left-[10%] w-[50%] h-[50%]"
+				className="absolute border-2 bottom-[10%] left-[10%] w-[50%] h-[50%]"
 			></div>
 			<button
 				className="absolute border-2 rounded-full flex items-center justify-center bottom-[15%] right-[10%] w-[10%] h-[10%]"
