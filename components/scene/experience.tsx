@@ -7,7 +7,6 @@ import { useGameStore } from "@/lib/stores";
 import {
 	Environment,
 	KeyboardControls,
-	OrbitControls,
 	useKeyboardControls,
 } from "@react-three/drei";
 import { Canvas, useFrame } from "@react-three/fiber";
@@ -20,9 +19,7 @@ import {
 	cameraGamePosition,
 	cameraCreditsPosition,
 } from "@/lib/config";
-import Player2 from "./player-2";
 import PlayerCom from "./player-com";
-import { City } from "./city";
 import { isMobile } from "react-device-detect";
 
 export default function Experience() {
@@ -33,19 +30,6 @@ export default function Experience() {
 	return (
 		<>
 			<KeyboardControls
-				// map={[
-				// 	{ name: "escape", keys: ["Escape"] },
-				// 	{ name: "forwardP1", keys: ["w", "W"] },
-				// 	{ name: "forwardP2", keys: ["ArrowUp"] },
-				// 	{ name: "backwardP1", keys: ["s", "S"] },
-				// 	{ name: "backwardP2", keys: ["ArrowDown"] },
-				// 	{ name: "leftP1", keys: ["a", "A"] },
-				// 	{ name: "leftP2", keys: ["ArrowLeft"] },
-				// 	{ name: "rightP1", keys: ["d", "D"] },
-				// 	{ name: "rightP2", keys: ["ArrowRight"] },
-				// 	{ name: "jumpP1", keys: ["Space"] },
-				// 	{ name: "jumpP2", keys: ["Numpad0"] },
-				// ]}
 				map={[
 					{ name: "escape", keys: ["Escape"] },
 					{ name: "forwardP1", keys: ["w", "W", "ArrowUp"] },
@@ -62,7 +46,7 @@ export default function Experience() {
 						antialias: isMobile ? false : true,
 					}}
 					shadows={isMobile ? false : true}
-					dpr={isMobile ? 0.8 : 1}
+					dpr={isMobile ? 0.9 : 1}
 					camera={{
 						position: [-1.5, 0.7, 0.5],
 						fov: 45,

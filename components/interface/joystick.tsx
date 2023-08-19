@@ -47,9 +47,6 @@ export default function Joystick() {
 			const { angle, force } = data;
 
 			if (force > 0.5) {
-				console.log(
-					angle.degree <= 90 && angle.degree >= 270 ? true : false
-				);
 				setDirection({
 					right:
 						angle.degree <= 60 || angle.degree >= 300
@@ -83,24 +80,21 @@ export default function Joystick() {
 		};
 	}, []);
 
-	if (
+	const isInvisible =
 		(gameMode !== "challenge" &&
 			gameMode !== "tournament" &&
 			gameMode !== "free" &&
 			gameMode !== "match") ||
-		!isMobile
-	) {
-		return null;
-	}
+		!isMobile;
 
 	return (
-		<div className="z-50">
+		<div className={isInvisible ? "hidden" : ""}>
 			<div
 				ref={joystickRef}
-				className="absolute border-2 bottom-[10%] left-[10%] w-[50%] h-[50%]"
+				className="z-50 absolute bottom-[10%] w-[70%] h-[70%]"
 			></div>
 			<button
-				className="absolute border-2 rounded-full flex items-center justify-center bottom-[15%] right-[10%] w-[10%] h-[10%]"
+				className="z-50 absolute border-2 rounded-full flex items-center justify-center bottom-[15%] right-[10%] w-[20%] h-[20%]"
 				onMouseDown={handleButtonPress}
 				onMouseUp={handleButtonRelease}
 			>

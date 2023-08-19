@@ -77,5 +77,3 @@ export default function Player2Mesh() {
 		</group>
 	);
 }
-
-useGLTF.preload("/models/timmy2.glb");

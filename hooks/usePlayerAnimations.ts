@@ -21,3 +21,5 @@ export function usePlayerAnimations(ref: any, characterState: any) {
 		actions,
 	};
 }
+
+useGLTF.preload("/models/blue-player-transformed.glb");

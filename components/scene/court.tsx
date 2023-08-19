@@ -116,12 +116,6 @@ export default function CourtModel(props: JSX.IntrinsicElements["group"]) {
 	return (
 		<group {...props} dispose={null}>
 			<group position={[0, 0.1, 0]}>
-				<mesh
-					castShadow
-					receiveShadow
-					geometry={nodes.Object_4.geometry}
-					material={materials.Outer_Floor}
-				/>
 				{/* Floor */}
 				<RigidBody name="floor" type="fixed">
 					<mesh
@@ -162,55 +156,6 @@ export default function CourtModel(props: JSX.IntrinsicElements["group"]) {
 					receiveShadow
 					geometry={nodes.Object_7.geometry}
 					material={materials.Support_Pillars}
-				/>
-
-				<mesh
-					castShadow
-					receiveShadow
-					geometry={nodes.Object_8.geometry}
-					material={materials.Mesh}
-				/>
-				<mesh
-					castShadow
-					receiveShadow
-					geometry={nodes.Object_9.geometry}
-					material={materials.Mesh}
-				/>
-				<mesh
-					castShadow
-					receiveShadow
-					geometry={nodes.Object_10.geometry}
-					material={materials.Mesh}
-				/>
-				<mesh
-					castShadow
-					receiveShadow
-					geometry={nodes.Object_11.geometry}
-					material={materials.Mesh}
-				/>
-				<mesh
-					castShadow
-					receiveShadow
-					geometry={nodes.Object_12.geometry}
-					material={materials.Mesh}
-				/>
-				<mesh
-					castShadow
-					receiveShadow
-					geometry={nodes.Object_13.geometry}
-					material={materials.Mesh}
-				/>
-				<mesh
-					castShadow
-					receiveShadow
-					geometry={nodes.Object_14.geometry}
-					material={materials.Mesh}
-				/>
-				<mesh
-					castShadow
-					receiveShadow
-					geometry={nodes.Object_15.geometry}
-					material={materials.Mesh}
 				/>
 			</group>
 			<group position={[2.113, 0.313, -0.794]}>
@@ -298,13 +243,6 @@ export default function CourtModel(props: JSX.IntrinsicElements["group"]) {
 				geometry={nodes.Object_24.geometry}
 				material={materials.Dust_Bin}
 				position={[2.113, 0.313, -0.794]}
-			/>
-			<mesh
-				castShadow
-				receiveShadow
-				geometry={nodes.Object_33.geometry}
-				material={materials.White}
-				position={[-2.24, 0.781, 0]}
 			/>
 		</group>
 	);
