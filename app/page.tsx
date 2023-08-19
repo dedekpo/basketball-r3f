@@ -1,6 +1,5 @@
 import Challenge from "@/components/interface/challenge";
 import Footer from "@/components/interface/footer";
-import LightSwitch from "@/components/interface/light-switch";
 import MusicPlayer from "@/components/interface/music-player";
 import Score from "@/components/interface/score";
 import Experience from "@/components/scene/experience";
@@ -21,7 +20,6 @@ export default function Home() {
 			<Challenge />
 			<MusicPlayer />
 			<Score />
-			<LightSwitch />
 			<Footer />
 			<Joystick />
 		</div>
