@@ -118,12 +118,12 @@ export default function CourtModel(props: JSX.IntrinsicElements["group"]) {
 			<group position={[0, 0.1, 0]}>
 				{/* Floor */}
 				<RigidBody name="floor" type="fixed">
-					<mesh
+					{/* <mesh
 						castShadow
 						receiveShadow
 						geometry={nodes.Object_5.geometry}
 						material={materials.Inner_Floor}
-					/>
+					/> */}
 					<CuboidCollider args={[2.7, 0.1, 2.05]} />
 				</RigidBody>
 				{/* Walls */}
@@ -145,7 +145,7 @@ export default function CourtModel(props: JSX.IntrinsicElements["group"]) {
 					position={[0, 2, -1.7]}
 					rotation={[0, Math.PI / 2, 0]}
 				/>
-				<mesh
+				{/* <mesh
 					castShadow
 					receiveShadow
 					geometry={nodes.Object_6.geometry}
@@ -156,9 +156,9 @@ export default function CourtModel(props: JSX.IntrinsicElements["group"]) {
 					receiveShadow
 					geometry={nodes.Object_7.geometry}
 					material={materials.Support_Pillars}
-				/>
+				/> */}
 			</group>
-			<group position={[2.113, 0.313, -0.794]}>
+			{/* <group position={[2.113, 0.313, -0.794]}>
 				<mesh
 					castShadow
 					receiveShadow
@@ -171,9 +171,9 @@ export default function CourtModel(props: JSX.IntrinsicElements["group"]) {
 					geometry={nodes.Object_22.geometry}
 					material={materials.Bench_Bottom}
 				/>
-			</group>
+			</group> */}
 			{/* Aro */}
-			<RigidBody name="rim" colliders="trimesh" type="fixed">
+			{/* <RigidBody name="rim" colliders="trimesh" type="fixed">
 				<group position={[-2.24, 0.781, 0]}>
 					<mesh
 						castShadow
@@ -200,7 +200,7 @@ export default function CourtModel(props: JSX.IntrinsicElements["group"]) {
 						material={materials.Bench_Bottom}
 					/>
 				</group>
-			</RigidBody>
+			</RigidBody> */}
 			<CuboidCollider
 				sensor
 				args={[0.01, 0.06, 0.06]}
@@ -223,7 +223,7 @@ export default function CourtModel(props: JSX.IntrinsicElements["group"]) {
 					}
 				}}
 			/>
-			<mesh
+			{/* <mesh
 				castShadow
 				receiveShadow
 				geometry={nodes.Object_17.geometry}
@@ -243,7 +243,7 @@ export default function CourtModel(props: JSX.IntrinsicElements["group"]) {
 				geometry={nodes.Object_24.geometry}
 				material={materials.Dust_Bin}
 				position={[2.113, 0.313, -0.794]}
-			/>
+			/> */}
 		</group>
 	);
 }

@@ -69,5 +69,3 @@ export default function PlayerMesh() {
 		</group>
 	);
 }
-
-useGLTF.preload("/models/blue-player-transformed.glb");
