@@ -67,12 +67,12 @@ export default function Player2Mesh() {
 					<meshStandardMaterial color="#714137" />
 				</skinnedMesh>
 				{/* Eyes */}
-				<skinnedMesh
+				{/* <skinnedMesh
 					name="Cube003_4"
 					geometry={nodes.Cube003_4.geometry}
 					material={materials["Material.001"]}
 					skeleton={nodes.Cube003_4.skeleton}
-				/>
+				/> */}
 			</group>
 		</group>
 	);

@@ -45,7 +45,7 @@ export default function Experience() {
 						powerPreference: "high-performance",
 						antialias: isMobile ? false : true,
 					}}
-					shadows={isMobile ? false : true}
+					// shadows={isMobile ? false : true}
 					dpr={isMobile ? 0.9 : 1}
 					camera={{
 						position: [-1.5, 0.7, 0.5],
@@ -54,7 +54,7 @@ export default function Experience() {
 						near: 0.01,
 					}}
 				>
-					<Perf />
+					<Perf matrixUpdate deepAnalyze overClock />
 					<Lights />
 					<CameraControls />
 					{/* <OrbitControls /> */}

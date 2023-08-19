@@ -59,12 +59,12 @@ export default function PlayerMesh() {
 					material={materials["Skin white"]}
 					skeleton={nodes.Cube003_3.skeleton}
 				/>
-				<skinnedMesh
+				{/* <skinnedMesh
 					name="Cube003_4"
 					geometry={nodes.Cube003_4.geometry}
 					material={materials["Material.001"]}
 					skeleton={nodes.Cube003_4.skeleton}
-				/>
+				/> */}
 			</group>
 		</group>
 	);
