@@ -1,5 +1,6 @@
 import Challenge from "@/components/interface/challenge";
 import Footer from "@/components/interface/footer";
+import Match from "@/components/interface/match";
 import MusicPlayer from "@/components/interface/music-player";
 import Score from "@/components/interface/score";
 import Experience from "@/components/scene/experience";
@@ -17,6 +18,7 @@ export default function Home() {
 		<div className="h-screen">
 			<Experience />
 			<Menu />
+			<Match />
 			<Challenge />
 			<MusicPlayer />
 			<Score />

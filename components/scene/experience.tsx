@@ -12,7 +12,6 @@ import {
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Physics } from "@react-three/rapier";
 import { Suspense } from "react";
-import { Perf } from "r3f-perf";
 
 import {
 	cameraMenuPosition,
@@ -54,7 +53,7 @@ export default function Experience() {
 						near: 0.01,
 					}}
 				>
-					<Perf matrixUpdate deepAnalyze overClock />
+					{/* <Perf matrixUpdate deepAnalyze overClock /> */}
 					<Lights />
 					<CameraControls />
 					{/* <OrbitControls /> */}
@@ -63,12 +62,6 @@ export default function Experience() {
 							<Player />
 							{(gameMode === "match" ||
 								gameMode === "tournament") && <PlayerCom />}
-							{/* {(gameMode === "match" ||
-								gameMode === "tournament") && <Player2 />} */}
-							{/* <City
-								scale={[0.3, 0.3, 0.3]}
-								position={[-1.1, -1.5, -0.2]}
-							/> */}
 							<Ball />
 							<CourtModel />
 						</Physics>

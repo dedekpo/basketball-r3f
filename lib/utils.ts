@@ -150,11 +150,6 @@ export function onClickSound() {
 
 export const trackList = [
 	{
-		name: "Crossover",
-		artist: "Unknown",
-		path: "/sounds/songs/menu-song.mp3",
-	},
-	{
 		name: "C.B.P.D",
 		artist: "Arulo",
 		path: "/sounds/songs/C.B.P.D by Arulo.mp3",

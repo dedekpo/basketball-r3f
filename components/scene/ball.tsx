@@ -1,4 +1,4 @@
-import { ballRef, players, useBallStore } from "@/lib/stores";
+import { ballRef, players, useBallStore, useGameStore } from "@/lib/stores";
 import { playAudio } from "@/lib/utils";
 import { useFrame } from "@react-three/fiber";
 import { BallCollider, RigidBody, vec3 } from "@react-three/rapier";
@@ -55,6 +55,8 @@ export default function Ball() {
 	}
 
 	const handleShot = () => {
+		ballRef.current!.isOnAir = true;
+
 		const ballPosition = vec3(playerRef.current?.translation());
 
 		const ballInHeadPosition = vec3({
@@ -88,51 +90,6 @@ export default function Ball() {
 		);
 
 		const distanceModifier = (distanceToHoop / delta) * DISTANCE_DIFFICULTY;
-
-		// const randomnessX = Math.random() - 0.5 > 0 ? 1 : -1;
-		// const randomnessY = Math.random() - 0.5 > 0 ? 1 : -1;
-		// const randomnessZ = Math.random() - 0.5 > 0 ? 1 : -1;
-
-		// if (shotPrecision < 0.02) {
-		// 	playAudio("perfect-release");
-		// 	ballRef.current?.applyImpulse(
-		// 		{
-		// 			x: direction.x * shotStrength,
-		// 			y: (direction.y + shotHeight) * shotStrength,
-		// 			z: direction.z * shotStrength,
-		// 		},
-		// 		true
-		// 	);
-		// } else {
-		// 	const finalModifier =
-		// 		0.8 + Math.abs(distanceModifier - 1) * shotPrecision;
-
-		// 	console.log(Math.abs(distanceModifier - 1) * shotPrecision);
-		// 	// shotStrength * 1.1 rim
-		// 	ballRef.current?.applyImpulse(
-		// 		{
-		// 			x:
-		// 				direction.x * shotStrength +
-		// 				randomnessX *
-		// 					(0.00003 +
-		// 						0.00003 * Math.abs(distanceModifier - 1)) *
-		// 					shotPrecision,
-		// 			y:
-		// 				(direction.y + shotHeight) * shotStrength +
-		// 				randomnessY *
-		// 					(0.00003 +
-		// 						0.00003 * Math.abs(distanceModifier - 1)) *
-		// 					shotPrecision,
-		// 			z:
-		// 				direction.z * shotStrength +
-		// 				randomnessZ *
-		// 					(0.00003 +
-		// 						0.00003 * Math.abs(distanceModifier - 1)) *
-		// 					shotPrecision,
-		// 		},
-		// 		true
-		// 	);
-		// }
 
 		ballRef.current?.applyImpulse(
 			{
@@ -188,6 +145,13 @@ export default function Ball() {
 			<BallCollider
 				args={[0.04]}
 				onCollisionEnter={({ other }) => {
+					if (
+						ballRef.current!.isOnAir &&
+						other.rigidBodyObject?.name !== "player" &&
+						other.rigidBodyObject?.name !== "player2"
+					) {
+						ballRef.current!.isOnAir = false;
+					}
 					if (
 						other.rigidBodyObject?.name === "floor" &&
 						!ballSoundRef.current.isSoundPlaying

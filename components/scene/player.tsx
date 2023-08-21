@@ -44,9 +44,13 @@ export default function Player() {
 		})
 	);
 
-	const { gameMode } = useGameStore((state) => ({
-		gameMode: state.gameMode,
-	}));
+	const { gameMode, setIsShotClocking, resetShotClock, canPlayersMove } =
+		useGameStore((state) => ({
+			gameMode: state.gameMode,
+			setIsShotClocking: state.setIsShotClocking,
+			resetShotClock: state.resetShotClock,
+			canPlayersMove: state.canPlayersMove,
+		}));
 
 	const { direction, jump } = useJoystickStore((state) => ({
 		direction: state.direction,
@@ -71,7 +75,8 @@ export default function Player() {
 		if (
 			!playerMeshRef.current ||
 			!playerRef.current ||
-			playerMeshRef.current.isShooting
+			playerMeshRef.current.isShooting ||
+			!canPlayersMove
 		) {
 			return;
 		}
@@ -306,10 +311,14 @@ export default function Player() {
 									playAudio("block");
 									return;
 								}
-
+								playAudio("grab");
 								player2MeshRef.current!.hasBall = false;
 								playerMeshRef.current!.hasBall = true;
-								playAudio("grab");
+								if (ballRef.current!.lastPlayerWithBall !== 0) {
+									resetShotClock();
+								}
+								setIsShotClocking(true);
+								ballRef.current!.lastPlayerWithBall = 0;
 								setPlayerWithBall(0);
 								ballRef.current!.cantSteal = true;
 								setTimeout(() => {

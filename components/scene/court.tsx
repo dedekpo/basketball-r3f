@@ -54,13 +54,17 @@ export default function CourtModel(props: JSX.IntrinsicElements["group"]) {
 		"/models/basketball_court.glb"
 	) as GLTFResult;
 
-	const { gameMode, setPlayer1Score, setPlayer2Score } = useGameStore(
-		(state) => ({
+	const { gameMode, setPlayer1Score, setPlayer2Score, setIsShotClocking } =
+		useGameStore((state) => ({
 			gameMode: state.gameMode,
 			setPlayer1Score: state.setPlayer1Score,
 			setPlayer2Score: state.setPlayer2Score,
-		})
-	);
+			setIsShotClocking: state.setIsShotClocking,
+		}));
+
+	const { resetShotClock } = useGameStore((state) => ({
+		resetShotClock: state.resetShotClock,
+	}));
 
 	const pointsRef = useRef({
 		canScore: true,
@@ -69,6 +73,8 @@ export default function CourtModel(props: JSX.IntrinsicElements["group"]) {
 	function handleScore(hoopSide: "left" | "right") {
 		if (pointsRef.current.canScore) {
 			if (gameMode === "match" || gameMode === "tournament") {
+				resetShotClock();
+				setIsShotClocking(false);
 				if (hoopSide === "right") {
 					setPlayer1Score();
 					if (playerMeshRef.current) {

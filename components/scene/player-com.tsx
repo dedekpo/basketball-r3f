@@ -34,6 +34,7 @@ export default function PlayerCom() {
 		characterState: state.characterState,
 		setCharacterState: state.setCharacterState,
 	}));
+
 	const { playerWithBall, setPlayerWithBall, setCurrentHoop } = useBallStore(
 		(state) => ({
 			playerWithBall: state.playerWithBall,
@@ -42,9 +43,13 @@ export default function PlayerCom() {
 		})
 	);
 
-	const { gameMode } = useGameStore((state) => ({
-		gameMode: state.gameMode,
-	}));
+	const { gameMode, resetShotClock, setIsShotClocking, canPlayersMove } =
+		useGameStore((state) => ({
+			gameMode: state.gameMode,
+			resetShotClock: state.resetShotClock,
+			setIsShotClocking: state.setIsShotClocking,
+			canPlayersMove: state.canPlayersMove,
+		}));
 
 	useEffect(() => {
 		player2Ref.current!.collider(1).setEnabled(false);
@@ -55,7 +60,8 @@ export default function PlayerCom() {
 			!player2MeshRef.current ||
 			player2MeshRef.current.isShooting ||
 			!player2Ref.current ||
-			!playerRef.current
+			!playerRef.current ||
+			!canPlayersMove
 		) {
 			return;
 		}
@@ -324,9 +330,14 @@ export default function PlayerCom() {
 								return;
 							}
 
+							playAudio("grab");
 							playerMeshRef.current!.hasBall = false;
 							player2MeshRef.current!.hasBall = true;
-							playAudio("grab");
+							if (ballRef.current!.lastPlayerWithBall !== 1) {
+								resetShotClock();
+							}
+							setIsShotClocking(true);
+							ballRef.current!.lastPlayerWithBall = 1;
 							setPlayerWithBall(1);
 							ballRef.current!.cantSteal = true;
 							setTimeout(() => {

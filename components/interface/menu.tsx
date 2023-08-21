@@ -1,16 +1,27 @@
 "use client";
 
 import { useGameStore } from "@/lib/stores";
-import { onClickSound, onHoverSound } from "@/lib/utils";
+import { onClickSound, onHoverSound, playAudio } from "@/lib/utils";
 import { useProgress } from "@react-three/drei";
 import { isMobile } from "react-device-detect";
 
 export default function Menu() {
 	const { progress } = useProgress();
 
-	const { gameMode, setGameMode } = useGameStore((state) => ({
+	const {
+		gameMode,
+		setGameMode,
+		resetTime,
+		resetShotClock,
+		resetGameScore,
+		setCanPlayersMove,
+	} = useGameStore((state) => ({
 		gameMode: state.gameMode,
 		setGameMode: state.setGameMode,
+		resetTime: state.resetTime,
+		resetShotClock: state.resetShotClock,
+		resetGameScore: state.resetGameScore,
+		setCanPlayersMove: state.setCanPlayersMove,
 	}));
 
 	if (progress < 100 || gameMode === "loading")
@@ -26,6 +37,11 @@ export default function Menu() {
 					onClick={() => {
 						onClickSound();
 						setGameMode("match");
+						resetGameScore();
+						resetTime();
+						resetShotClock();
+						playAudio("referee-short");
+						setCanPlayersMove(true);
 					}}
 				>
 					<p className="text-right hover:text-[#FE2844] drop-shadow-[0_3px_3px_rgba(43,42,58,1)]">
@@ -37,6 +53,7 @@ export default function Menu() {
 					onClick={() => {
 						onClickSound();
 						setGameMode("challenge");
+						setCanPlayersMove(true);
 					}}
 				>
 					<p className="text-right hover:text-[#FE2844] drop-shadow-[0_3px_3px_rgba(43,42,58,1)]">
@@ -48,6 +65,7 @@ export default function Menu() {
 					onClick={() => {
 						onClickSound();
 						setGameMode("challenge");
+						setCanPlayersMove(true);
 					}}
 				>
 					<p className="text-right hover:text-[#FE2844] drop-shadow-[0_3px_3px_rgba(43,42,58,1)]">
@@ -59,6 +77,7 @@ export default function Menu() {
 					onClick={() => {
 						onClickSound();
 						setGameMode("free");
+						setCanPlayersMove(true);
 					}}
 				>
 					<p className="text-right hover:text-[#FE2844] drop-shadow-[0_3px_3px_rgba(43,42,58,1)]">

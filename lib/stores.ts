@@ -19,6 +19,8 @@ interface BallRefProps extends RapierRigidBody {
 	shouldShot?: boolean;
 	shotProgress?: number;
 	cantSteal?: boolean;
+	isOnAir?: boolean;
+	lastPlayerWithBall?: number;
 }
 
 export const playerRef = createRef() as RefObject<RapierRigidBody>;
@@ -56,6 +58,16 @@ interface GameStateProps {
 	setPlayer1Score: () => void;
 	setPlayer2Score: () => void;
 	resetGameScore: () => void;
+	gameTime: number;
+	decreaseTime: () => void;
+	shotClock: number;
+	decreaseShotClock: () => void;
+	resetTime: () => void;
+	resetShotClock: () => void;
+	isShotClocking: boolean;
+	setIsShotClocking: (value: boolean) => void;
+	canPlayersMove: boolean;
+	setCanPlayersMove: (newState: boolean) => void;
 }
 
 export type CharacterStates =
@@ -112,6 +124,27 @@ export const useGameStore = create<GameStateProps>()((set) => ({
 		set((state) => ({ player2Score: state.player2Score + 1 })),
 
 	resetGameScore: () => set(() => ({ player1Score: 0, player2Score: 0 })),
+
+	gameTime: 180, // 3 minutes
+	decreaseTime: () => set((state) => ({ gameTime: state.gameTime - 1 })),
+
+	shotClock: 12,
+	decreaseShotClock: () =>
+		set((state) => ({ shotClock: state.shotClock - 1 })),
+	isShotClocking: false,
+	setIsShotClocking: (newState) => set(() => ({ isShotClocking: newState })),
+
+	resetTime: () => set(() => ({ gameTime: 180 })),
+	resetShotClock: () =>
+		set((state) => {
+			if (state.gameTime < 12) {
+				return { shotClock: state.gameTime };
+			}
+			return { shotClock: 12 };
+		}),
+
+	canPlayersMove: false,
+	setCanPlayersMove: (newState) => set(() => ({ canPlayersMove: newState })),
 }));
 
 export const useJoystickStore = create<any>()((set) => ({
