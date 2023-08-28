@@ -63,11 +63,14 @@ interface GameStateProps {
 	shotClock: number;
 	decreaseShotClock: () => void;
 	resetTime: () => void;
+	increaseTime: () => void;
 	resetShotClock: () => void;
 	isShotClocking: boolean;
 	setIsShotClocking: (value: boolean) => void;
 	canPlayersMove: boolean;
 	setCanPlayersMove: (newState: boolean) => void;
+	tournamentRound: number;
+	setTournamentRound: (newRound: number) => void;
 }
 
 export type CharacterStates =
@@ -135,6 +138,9 @@ export const useGameStore = create<GameStateProps>()((set) => ({
 	setIsShotClocking: (newState) => set(() => ({ isShotClocking: newState })),
 
 	resetTime: () => set(() => ({ gameTime: 180 })),
+
+	increaseTime: () => set((state) => ({ gameTime: state.gameTime + 30 })),
+
 	resetShotClock: () =>
 		set((state) => {
 			if (state.gameTime < 12) {
@@ -145,6 +151,10 @@ export const useGameStore = create<GameStateProps>()((set) => ({
 
 	canPlayersMove: false,
 	setCanPlayersMove: (newState) => set(() => ({ canPlayersMove: newState })),
+
+	tournamentRound: 1,
+	setTournamentRound: (newRound) =>
+		set(() => ({ tournamentRound: newRound })),
 }));
 
 export const useJoystickStore = create<any>()((set) => ({

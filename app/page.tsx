@@ -2,7 +2,7 @@ import Challenge from "@/components/interface/challenge";
 import Footer from "@/components/interface/footer";
 import Match from "@/components/interface/match";
 import MusicPlayer from "@/components/interface/music-player";
-import Score from "@/components/interface/score";
+// import Score from "@/components/interface/score";
 import Experience from "@/components/scene/experience";
 import dynamic from "next/dynamic";
 
@@ -21,8 +21,8 @@ export default function Home() {
 			<Match />
 			<Challenge />
 			<MusicPlayer />
-			<Score />
-			<Footer />
+			{/* <Score /> */}
+			{/* <Footer /> */}
 			<Joystick />
 		</div>
 	);

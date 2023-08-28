@@ -1,8 +1,7 @@
 import { usePlayerAnimations } from "@/hooks/usePlayerAnimations";
-import { player2MeshRef, usePlayer2Store } from "@/lib/stores";
-import { useGLTF } from "@react-three/drei";
+import { player2MeshRef, useGameStore, usePlayer2Store } from "@/lib/stores";
 import { useGraph } from "@react-three/fiber";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { SkeletonUtils } from "three-stdlib";
 
 export default function Player2Mesh() {
@@ -14,6 +13,10 @@ export default function Player2Mesh() {
 		player2MeshRef,
 		characterState
 	);
+
+	const { tournamentRound } = useGameStore((state) => ({
+		tournamentRound: state.tournamentRound,
+	}));
 
 	// Skinned meshes cannot be re-used in threejs without cloning them
 	const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
@@ -48,15 +51,26 @@ export default function Player2Mesh() {
 					// material={materials.Blue}
 					skeleton={nodes.Cube003_2.skeleton}
 				>
-					<meshStandardMaterial color="#ff2c2c" />
+					{/* <meshStandardMaterial color="#ff2c2c" /> */}
+					{tournamentRound === 1 ? (
+						<meshStandardMaterial color="#2c7034" />
+					) : tournamentRound === 2 ? (
+						<meshStandardMaterial color="#ff7b1c" />
+					) : tournamentRound === 3 ? (
+						<meshStandardMaterial color="#9354ff" />
+					) : (
+						<meshStandardMaterial color="#ff2c2c" />
+					)}
 				</skinnedMesh>
 				{/* Internal Shirt */}
 				<skinnedMesh
 					name="Cube003"
 					geometry={nodes.Cube003.geometry}
-					material={nodes.Cube003.material}
+					// material={nodes.Cube003.material}
 					skeleton={nodes.Cube003.skeleton}
-				/>
+				>
+					<meshBasicMaterial color="#ffffff" />
+				</skinnedMesh>
 				{/* Skin */}
 				<skinnedMesh
 					name="Cube003_3"
@@ -64,7 +78,16 @@ export default function Player2Mesh() {
 					// material={materials["Skin white"]}
 					skeleton={nodes.Cube003_3.skeleton}
 				>
-					<meshStandardMaterial color="#714137" />
+					{/* <meshStandardMaterial color="#714137" /> */}
+					{tournamentRound === 1 ? (
+						<meshStandardMaterial color="#fcc883" />
+					) : tournamentRound === 2 ? (
+						<meshStandardMaterial color="#7d5f38" />
+					) : tournamentRound === 3 ? (
+						<meshStandardMaterial color="#c68642" />
+					) : (
+						<meshStandardMaterial color="#714137" />
+					)}
 				</skinnedMesh>
 				{/* Eyes */}
 				{/* <skinnedMesh

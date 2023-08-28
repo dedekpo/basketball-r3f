@@ -52,8 +52,7 @@ export default function Menu() {
 					onPointerEnter={onHoverSound}
 					onClick={() => {
 						onClickSound();
-						setGameMode("challenge");
-						setCanPlayersMove(true);
+						setGameMode("tournament");
 					}}
 				>
 					<p className="text-right hover:text-[#FE2844] drop-shadow-[0_3px_3px_rgba(43,42,58,1)]">
