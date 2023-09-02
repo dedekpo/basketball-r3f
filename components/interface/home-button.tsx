@@ -1,5 +1,6 @@
 "use client";
 
+import { useResetPositions } from "@/hooks/useResetPositions";
 import { useGameStore } from "@/lib/stores";
 import { onClickSound, onHoverSound } from "@/lib/utils";
 
@@ -22,6 +23,8 @@ export default function HomeButton() {
 		setIsGameRunning: state.setIsGameRunning,
 	}));
 
+	const { resetBallPosition, resetPlayersPosition } = useResetPositions();
+
 	function handleClick() {
 		onClickSound();
 		setGameMode("menu");
@@ -29,7 +32,9 @@ export default function HomeButton() {
 		resetShotClock();
 		resetTime();
 		resetGameScore();
+		resetPlayersPosition();
 		setIsGameRunning(false);
+		resetBallPosition();
 	}
 
 	if (gameMode === "menu") return;

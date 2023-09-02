@@ -21,6 +21,8 @@ import {
 import PlayerCom from "./player-com";
 import { isMobile } from "react-device-detect";
 import { City } from "./city";
+import { onClickSound } from "@/lib/utils";
+import { useResetPositions } from "@/hooks/useResetPositions";
 
 export default function Experience() {
 	const { gameMode } = useGameStore((state) => ({
@@ -77,16 +79,39 @@ export default function Experience() {
 function CameraControls() {
 	const [, get] = useKeyboardControls();
 
-	const { gameMode, setGameMode } = useGameStore((state) => ({
+	const {
+		gameMode,
+		setGameMode,
+		setCanPlayersMove,
+		resetShotClock,
+		resetTime,
+		resetGameScore,
+		setIsGameRunning,
+	} = useGameStore((state) => ({
 		gameMode: state.gameMode,
 		setGameMode: state.setGameMode,
+		setCanPlayersMove: state.setCanPlayersMove,
+		resetShotClock: state.resetShotClock,
+		resetTime: state.resetTime,
+		resetGameScore: state.resetGameScore,
+		setIsGameRunning: state.setIsGameRunning,
 	}));
+
+	const { resetBallPosition, resetPlayersPosition } = useResetPositions();
 
 	return useFrame(({ camera }) => {
 		const { escape } = get();
 
 		if (escape) {
 			setGameMode("menu");
+			onClickSound();
+			setCanPlayersMove(false);
+			resetShotClock();
+			resetTime();
+			resetGameScore();
+			resetPlayersPosition();
+			setIsGameRunning(false);
+			resetBallPosition();
 		}
 		if (gameMode === "menu") {
 			camera.position.lerp(cameraMenuPosition, 0.05);

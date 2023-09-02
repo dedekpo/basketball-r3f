@@ -25,6 +25,26 @@ export function rotatePlayer(
 	playerMeshRef: any,
 	delta: number
 ) {
+	if (playerMeshRef.current.IAShouldGoTo) {
+		playerMeshRef.current.lookAt(
+			playerMeshRef.current.IAShouldGoTo.x,
+			0.21,
+			playerMeshRef.current.IAShouldGoTo.z
+		);
+		return;
+	}
+	if (
+		playerMeshRef.current.IAPlaceToShoot &&
+		playerMeshRef.current.hasBall &&
+		!playerMeshRef.current.isShooting
+	) {
+		playerMeshRef.current.lookAt(
+			playerMeshRef.current.IAPlaceToShoot.x,
+			0.21,
+			playerMeshRef.current.IAPlaceToShoot.z
+		);
+		return;
+	}
 	const modelEuler = rotate[player].modelEuler;
 	const modelQuat = rotate[player].modelQuat;
 	const pivot = rotate[player].pivot;
@@ -58,7 +78,7 @@ export function rotatePlayer(
 	}
 
 	modelQuat.setFromEuler(modelEuler);
-	playerMeshRef.current.quaternion.rotateTowards(modelQuat, delta * 7);
+	playerMeshRef.current.quaternion.rotateTowards(modelQuat, delta * 10);
 }
 
 export function movePlayer(
