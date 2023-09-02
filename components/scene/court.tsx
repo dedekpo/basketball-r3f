@@ -51,7 +51,7 @@ type GLTFResult = GLTF & {
 
 export default function CourtModel(props: JSX.IntrinsicElements["group"]) {
 	const { nodes, materials } = useGLTF(
-		"/models/basketball_court.glb"
+		"/models/basketball_court2.glb"
 	) as GLTFResult;
 
 	const { gameMode, setPlayer1Score, setPlayer2Score, setIsShotClocking } =
@@ -210,7 +210,7 @@ export default function CourtModel(props: JSX.IntrinsicElements["group"]) {
 			<CuboidCollider
 				sensor
 				args={[0.01, 0.06, 0.06]}
-				position={[1.9, 0.98, 0]}
+				position={[1.9, 0.97, 0]}
 				rotation={[0, 0, Math.PI / 2]}
 				onIntersectionExit={({ other }) => {
 					if (other.rigidBodyObject?.name === "ball") {
@@ -221,7 +221,7 @@ export default function CourtModel(props: JSX.IntrinsicElements["group"]) {
 			<CuboidCollider
 				sensor
 				args={[0.01, 0.06, 0.06]}
-				position={[-1.9, 0.98, 0]}
+				position={[-1.9, 0.97, 0]}
 				rotation={[0, 0, Math.PI / 2]}
 				onIntersectionExit={({ other }) => {
 					if (other.rigidBodyObject?.name === "ball") {
@@ -254,4 +254,4 @@ export default function CourtModel(props: JSX.IntrinsicElements["group"]) {
 	);
 }
 
-useGLTF.preload("/models/basketball_court.glb");
+useGLTF.preload("/models/basketball_court2.glb");

@@ -279,7 +279,10 @@ export default function Player() {
 						target.rigidBodyObject?.name === "player" &&
 						other.rigidBodyObject?.name === "ball"
 					) {
-						if (gameMode === "challenge" || gameMode === "free") {
+						if (
+							(gameMode === "challenge" || gameMode === "free") &&
+							!playerMeshRef.current!.hasBall
+						) {
 							playerMeshRef.current!.hasBall = true;
 							playAudio("grab");
 							setPlayerWithBall(0);

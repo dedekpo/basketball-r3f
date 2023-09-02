@@ -23,8 +23,8 @@ export const SHOT_METTER_VELOCITY = 30;
 export const SHOT_DIFFICULTY = 0.8; // 0 -> easy / 1 -> hard
 export const DISTANCE_DIFFICULTY = 0.8; // 0 -> easy / 1 -> hard
 
-export const cameraMenuPosition = new THREE.Vector3(-1.5, 0.7, 0.5);
-export const cameraGamePosition = new THREE.Vector3(0, 2.5, 3.5);
+export const cameraMenuPosition = new THREE.Vector3(-1.3, 0.8, 0.5);
+export const cameraGamePosition = new THREE.Vector3(0, 2.5, 3);
 export const cameraCreditsPosition = new THREE.Vector3(-4, 2, 0);
 
 export const MOVEMENT_SPEED = 0.003;

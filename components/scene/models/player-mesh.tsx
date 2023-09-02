@@ -21,7 +21,13 @@ export default function PlayerMesh() {
 	const { nodes } = useGraph(clone) as any;
 
 	return (
-		<group ref={playerMeshRef} name="Scene" dispose={null}>
+		<group
+			castShadow
+			receiveShadow
+			ref={playerMeshRef}
+			name="Scene"
+			dispose={null}
+		>
 			<group
 				name="Armature"
 				position={[0, 0.14, 0]}
@@ -59,12 +65,6 @@ export default function PlayerMesh() {
 					material={materials["Skin white"]}
 					skeleton={nodes.Cube003_3.skeleton}
 				/>
-				{/* <skinnedMesh
-					name="Cube003_4"
-					geometry={nodes.Cube003_4.geometry}
-					material={materials["Material.001"]}
-					skeleton={nodes.Cube003_4.skeleton}
-				/> */}
 			</group>
 		</group>
 	);

@@ -36,11 +36,11 @@ export default function MusicPlayer() {
 
 	return (
 		<div className="absolute top-5 left-5 text-white">
-			<div className="flex flex-col">
+			{/* <div className="flex flex-col">
 				<span className="text-xs">Now playing:</span>
 				<span className="text-bold">{currentSong.name}</span>
 				<span className="text-sm">by {currentSong.artist}</span>
-			</div>
+			</div> */}
 		</div>
 	);
 }

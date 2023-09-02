@@ -3,7 +3,7 @@ import { useEffect } from "react";
 
 export function usePlayerAnimations(ref: any, characterState: any) {
 	const { scene, materials, animations } = useGLTF(
-		"/models/blue-player-transformed.glb"
+		"/models/player-final-transformed.glb"
 	) as any;
 
 	const { actions } = useAnimations<any>(animations, ref);
@@ -22,4 +22,4 @@ export function usePlayerAnimations(ref: any, characterState: any) {
 	};
 }
 
-useGLTF.preload("/models/blue-player-transformed.glb");
+useGLTF.preload("/models/player-final-transformed.glb");

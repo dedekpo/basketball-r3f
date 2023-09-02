@@ -58,7 +58,7 @@ export function rotatePlayer(
 	}
 
 	modelQuat.setFromEuler(modelEuler);
-	playerMeshRef.current.quaternion.rotateTowards(modelQuat, delta * 10);
+	playerMeshRef.current.quaternion.rotateTowards(modelQuat, delta * 7);
 }
 
 export function movePlayer(

@@ -1,5 +1,6 @@
 import Challenge from "@/components/interface/challenge";
 import Footer from "@/components/interface/footer";
+import HomeButton from "@/components/interface/home-button";
 import Match from "@/components/interface/match";
 import MusicPlayer from "@/components/interface/music-player";
 // import Score from "@/components/interface/score";
@@ -21,6 +22,7 @@ export default function Home() {
 			<Match />
 			<Challenge />
 			<MusicPlayer />
+			<HomeButton />
 			{/* <Score /> */}
 			{/* <Footer /> */}
 			<Joystick />

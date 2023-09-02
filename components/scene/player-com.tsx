@@ -245,9 +245,6 @@ export default function PlayerCom() {
 			characterState,
 			setCharacterState
 		);
-		// const linvel = player2Ref.current.linvel();
-		// const angle = Math.atan2(linvel.x, linvel.z);
-		// player2MeshRef.current.rotation.y = angle;
 		rotatePlayer(
 			1,
 			rightP2,

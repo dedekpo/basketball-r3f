@@ -20,6 +20,7 @@ import {
 } from "@/lib/config";
 import PlayerCom from "./player-com";
 import { isMobile } from "react-device-detect";
+import { City } from "./city";
 
 export default function Experience() {
 	const { gameMode } = useGameStore((state) => ({
@@ -64,6 +65,7 @@ export default function Experience() {
 								gameMode === "tournament") && <PlayerCom />}
 							<Ball />
 							<CourtModel />
+							<City />
 						</Physics>
 					</Suspense>
 				</Canvas>
