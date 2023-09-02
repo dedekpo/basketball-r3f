@@ -52,7 +52,7 @@ export default function PlayerCom() {
 		}));
 
 	useEffect(() => {
-		player2Ref.current!.collider(1).setEnabled(false);
+		player2Ref.current?.collider(1).setEnabled(false);
 	}, []);
 
 	const handleMovement = (delta: number) => {

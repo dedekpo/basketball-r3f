@@ -13,8 +13,9 @@ export default function Joystick() {
 		setJump: state.setJump,
 	}));
 
-	const { gameMode } = useGameStore((state) => ({
+	const { gameMode, canPlayersMove } = useGameStore((state) => ({
 		gameMode: state.gameMode,
+		canPlayersMove: state.canPlayersMove,
 	}));
 
 	const handleButtonPress = () => {
@@ -85,7 +86,8 @@ export default function Joystick() {
 			gameMode !== "tournament" &&
 			gameMode !== "free" &&
 			gameMode !== "match") ||
-		!isMobile;
+		!isMobile ||
+		!canPlayersMove;
 
 	return (
 		<div className={isInvisible ? "hidden" : ""}>

@@ -71,6 +71,8 @@ interface GameStateProps {
 	setCanPlayersMove: (newState: boolean) => void;
 	tournamentRound: number;
 	setTournamentRound: (newRound: number) => void;
+	isGameRunning: boolean;
+	setIsGameRunning: (newState: boolean) => void;
 }
 
 export type CharacterStates =
@@ -155,6 +157,9 @@ export const useGameStore = create<GameStateProps>()((set) => ({
 	tournamentRound: 1,
 	setTournamentRound: (newRound) =>
 		set(() => ({ tournamentRound: newRound })),
+
+	isGameRunning: false,
+	setIsGameRunning: (newState) => set(() => ({ isGameRunning: newState })),
 }));
 
 export const useJoystickStore = create<any>()((set) => ({

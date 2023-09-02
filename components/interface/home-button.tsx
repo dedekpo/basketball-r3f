@@ -4,20 +4,40 @@ import { useGameStore } from "@/lib/stores";
 import { onClickSound, onHoverSound } from "@/lib/utils";
 
 export default function HomeButton() {
-	const { gameMode, setGameMode } = useGameStore((state) => ({
+	const {
+		gameMode,
+		setGameMode,
+		setCanPlayersMove,
+		resetShotClock,
+		resetTime,
+		resetGameScore,
+		setIsGameRunning,
+	} = useGameStore((state) => ({
 		gameMode: state.gameMode,
 		setGameMode: state.setGameMode,
+		setCanPlayersMove: state.setCanPlayersMove,
+		resetShotClock: state.resetShotClock,
+		resetTime: state.resetTime,
+		resetGameScore: state.resetGameScore,
+		setIsGameRunning: state.setIsGameRunning,
 	}));
+
+	function handleClick() {
+		onClickSound();
+		setGameMode("menu");
+		setCanPlayersMove(false);
+		resetShotClock();
+		resetTime();
+		resetGameScore();
+		setIsGameRunning(false);
+	}
 
 	if (gameMode === "menu") return;
 
 	return (
 		<button
 			onPointerEnter={onHoverSound}
-			onClick={() => {
-				onClickSound();
-				setGameMode("menu");
-			}}
+			onClick={handleClick}
 			className="absolute top-4 right-4 border-2 p-2 rounded-full bg-white"
 		>
 			<svg

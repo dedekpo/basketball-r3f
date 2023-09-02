@@ -31,6 +31,8 @@ export default function Match() {
 		setCanPlayersMove,
 		tournamentRound,
 		setTournamentRound,
+		isGameRunning,
+		setIsGameRunning,
 	} = useGameStore((state) => ({
 		player1Score: state.player1Score,
 		player2Score: state.player2Score,
@@ -48,13 +50,14 @@ export default function Match() {
 		setCanPlayersMove: state.setCanPlayersMove,
 		tournamentRound: state.tournamentRound,
 		setTournamentRound: state.setTournamentRound,
+		isGameRunning: state.isGameRunning,
+		setIsGameRunning: state.setIsGameRunning,
 	}));
 
 	const { setPlayerWithBall } = useBallStore((state) => ({
 		setPlayerWithBall: state.setPlayerWithBall,
 	}));
 
-	const [isGameRunning, setIsGameRunning] = useState(false);
 	const [isGameEnded, setIsGameEnded] = useState(false);
 	const [hasLost, setHasLost] = useState(false);
 
@@ -148,8 +151,8 @@ export default function Match() {
 		<div>
 			{gameMode === "tournament" && !isGameRunning && (
 				<div className="absolute top-0 h-screen w-screen flex flex-col items-center justify-center">
-					<div className="relative flex flex-col items-center border-2 bg-white h-[100vh] w-[100vw] md:h-[80%] md:w-[80%] md:rounded-[50px] shadow-md">
-						<h1 className="text-xl md:text-4xl font-bold mt-2 md:mt-4">
+					<div className="relative flex flex-col items-center border-2 bg-white h-[100vh] w-[100vw] lg:h-[80%] lg:w-[80%] lg:rounded-[50px] shadow-md">
+						<h1 className="text-xl lg:text-4xl font-bold mt-2 lg:mt-4">
 							City Tournament
 						</h1>
 						<span>Round: {tournamentRound}</span>
@@ -167,7 +170,7 @@ export default function Match() {
 								}
 								handleStartGame();
 							}}
-							className="z-10 border-2 rounded-md bg-green-500 font-bold text-sm md:text-2xl text-gray-100 px-2 py-1 md:px-4 md:py-2 md:mt-4 shadow-md hover:bg-green-600 uppercase"
+							className="z-10 border-2 rounded-md bg-green-500 font-bold text-sm lg:text-2xl text-gray-100 px-2 py-1 lg:px-4 lg:py-2 lg:mt-4 shadow-md hover:bg-green-600 uppercase"
 						>
 							{tournamentRound < 5 && !hasLost
 								? "Play next round"
@@ -197,7 +200,7 @@ export default function Match() {
 							)}
 						</div>
 
-						<div className="flex gap-4 w-[80%] mx-auto mb-2 border-2 rounded-[50px] shadow-md h-[110px] md:h-[140px] overflow-hidden">
+						<div className="flex gap-4 w-[80%] mx-auto mb-2 border-2 rounded-[50px] shadow-md h-[110px] lg:h-[140px] overflow-hidden">
 							{hasLost ? (
 								<img
 									src="/images/mayor-sad.jpg"
@@ -212,7 +215,7 @@ export default function Match() {
 								/>
 							)}
 
-							<div className="text-xs md:text-xl py-2 pr-4">
+							<div className="text-xs lg:text-xl py-2 pr-4">
 								{!hasLost ? (
 									<div>
 										{tournamentRound === 1 && (
@@ -280,7 +283,7 @@ export default function Match() {
 								)}
 							</div>
 						</div>
-						<div className="absolute w-full h-[50%] mt-[50px] md:mt-[100px] text-sm text-center">
+						<div className="absolute w-full h-[50%] mt-[50px] lg:mt-[100px] text-sm text-center">
 							<div className="flex justify-between h-full">
 								<div className="w-full flex flex-col justify-evenly items-center">
 									<PlayerBracket name="Player 1" round={1} />
@@ -494,22 +497,22 @@ export default function Match() {
 				</div>
 			)}
 			{isGameRunning && (
-				<div className="flex flex-col items-center absolute left-0 right-0 top-2 md:top-4">
+				<div className="flex flex-col items-center absolute left-0 right-0 top-2 lg:top-4">
 					<div className="flex justify-evenly w-[200px] rounded-md border-4 opacity-90 bg-[conic-gradient(at_top_left,_var(--tw-gradient-stops))] from-gray-900 to-gray-600 bg-gradient-to-r">
 						<div className="flex flex-col text-white text-center py-2 ">
 							<p className="text-xs">Player 1:</p>
-							<p className="text-xl md:text-3xl font-bold">
+							<p className="text-xl lg:text-3xl font-bold">
 								{player1Score}
 							</p>
 						</div>
 						<div className="flex flex-col text-white text-center py-2 ">
 							<p className="text-xs">Player 2:</p>
-							<p className="text-xl md:text-3xl font-bold">
+							<p className="text-xl lg:text-3xl font-bold">
 								{player2Score}
 							</p>
 						</div>
 					</div>
-					<div className="flex justify-evenly w-[200px] text-sm md:text-xl">
+					<div className="flex justify-evenly w-[200px] text-sm lg:text-xl">
 						<div className="">
 							{gameMinutes}:{gameSeconds}
 						</div>
@@ -535,7 +538,7 @@ function PlayerBracket({
 	}));
 	return (
 		<div
-			className={`text-xs md:text-base w-[50px] md:w-[100px] h-[20px] bg-gray-200 ${
+			className={`text-xs lg:text-base w-[50px] lg:w-[100px] h-[20px] bg-gray-200 ${
 				lostRound < tournamentRound && tournamentRound > round
 					? "opacity-50"
 					: ""
