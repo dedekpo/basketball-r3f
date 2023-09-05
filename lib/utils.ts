@@ -45,6 +45,9 @@ export function rotatePlayer(
 		);
 		return;
 	}
+
+	if (!forward && !backward && !left && !right) return;
+
 	const modelEuler = rotate[player].modelEuler;
 	const modelQuat = rotate[player].modelQuat;
 	const pivot = rotate[player].pivot;

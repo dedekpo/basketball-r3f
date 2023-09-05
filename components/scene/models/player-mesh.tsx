@@ -1,5 +1,9 @@
 import { usePlayerAnimations } from "@/hooks/usePlayerAnimations";
-import { playerMeshRef, usePlayer1Store } from "@/lib/stores";
+import {
+	playerMeshRef,
+	useGamificationStore,
+	usePlayer1Store,
+} from "@/lib/stores";
 import { useGLTF } from "@react-three/drei";
 import { useGraph } from "@react-three/fiber";
 import { useMemo } from "react";
@@ -19,6 +23,11 @@ export default function PlayerMesh() {
 	const clone = useMemo(() => SkeletonUtils.clone(scene), [scene]);
 	// useGraph creates two flat object collections for nodes and materials
 	const { nodes } = useGraph(clone) as any;
+
+	const { skinColor, shirtColor } = useGamificationStore((state) => ({
+		skinColor: state.skinColor,
+		shirtColor: state.shirtColor,
+	}));
 
 	return (
 		<group
@@ -56,15 +65,19 @@ export default function PlayerMesh() {
 				<skinnedMesh
 					name="Cube003_2"
 					geometry={nodes.Cube003_2.geometry}
-					material={materials.Blue}
+					// material={materials.Blue}
 					skeleton={nodes.Cube003_2.skeleton}
-				/>
+				>
+					<meshStandardMaterial color={shirtColor} />
+				</skinnedMesh>
 				<skinnedMesh
 					name="Cube003_3"
 					geometry={nodes.Cube003_3.geometry}
-					material={materials["Skin white"]}
+					// material={materials["Skin white"]}
 					skeleton={nodes.Cube003_3.skeleton}
-				/>
+				>
+					<meshStandardMaterial color={skinColor} />
+				</skinnedMesh>
 			</group>
 		</group>
 	);

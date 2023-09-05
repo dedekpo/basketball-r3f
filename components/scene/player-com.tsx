@@ -266,13 +266,20 @@ export default function PlayerCom() {
 		if (!player2MeshRef.current?.isShooting) {
 			return;
 		}
+		player2MeshRef.current.lookAt(
+			vec3({
+				x: leftHoop.x,
+				y: 0.3,
+				z: leftHoop.z,
+			})
+		);
 		if (
 			(player2MeshRef.current?.shotProgress || 0) <
 			(player2MeshRef.current?.IAShotPrecision || 0)
 		) {
 			player2MeshRef.current.shotProgress =
 				(player2MeshRef.current.shotProgress || 0) +
-				delta * SHOT_METTER_VELOCITY;
+				delta * SHOT_METTER_VELOCITY * 0.5;
 			return;
 		}
 

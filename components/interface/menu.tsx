@@ -5,6 +5,7 @@ import { onClickSound, onHoverSound } from "@/lib/utils";
 import { useProgress } from "@react-three/drei";
 import { isMobile } from "react-device-detect";
 import Image from "next/image";
+import ColorPicker from "../ui/color-picker";
 
 export default function Menu() {
 	const { progress } = useProgress();
@@ -35,64 +36,69 @@ export default function Menu() {
 					className="object-cover object-center"
 				/>
 			</div> */}
-			<div className="flex flex-col text-white font-bold text-[9vh] w-[80%]">
-				<button
-					onPointerEnter={onHoverSound}
-					onClick={() => {
-						onClickSound();
-						setGameMode("match");
-					}}
-				>
-					<p className="text-right hover:text-[#FE2844] drop-shadow-[0_3px_3px_rgba(43,42,58,1)]">
-						Quick Match
-					</p>
-				</button>
-				<button
-					onPointerEnter={onHoverSound}
-					onClick={() => {
-						onClickSound();
-						setGameMode("tournament");
-					}}
-				>
-					<p className="text-right hover:text-[#FE2844] drop-shadow-[0_3px_3px_rgba(43,42,58,1)]">
-						Tournament
-					</p>
-				</button>
-				<button
-					onPointerEnter={onHoverSound}
-					onClick={() => {
-						onClickSound();
-						setGameMode("challenge");
-						setCanPlayersMove(true);
-					}}
-				>
-					<p className="text-right hover:text-[#FE2844] drop-shadow-[0_3px_3px_rgba(43,42,58,1)]">
-						Challenge
-					</p>
-				</button>
-				<button
-					onPointerEnter={onHoverSound}
-					onClick={() => {
-						onClickSound();
-						setGameMode("free");
-						setCanPlayersMove(true);
-					}}
-				>
-					<p className="text-right hover:text-[#FE2844] drop-shadow-[0_3px_3px_rgba(43,42,58,1)]">
-						Practice
-					</p>
-				</button>
-				<button
-					onPointerEnter={onHoverSound}
-					onClick={() => {
-						onClickSound();
-						setGameMode("credits");
-					}}
-				>
-					<p className="text-right hover:text-[#FE2844] drop-shadow-[0_3px_3px_rgba(43,42,58,1)]">
-						Credits
-					</p>
-				</button>
+			<div className="flex w-[80%]">
+				<div className="relative w-full flex flex-col items-start -left-10">
+					<ColorPicker />
+				</div>
+				<div className="w-full flex flex-col text-white font-bold text-[9vh]">
+					<button
+						onPointerEnter={onHoverSound}
+						onClick={() => {
+							onClickSound();
+							setGameMode("match");
+						}}
+					>
+						<p className="text-right hover:text-[#FE2844] drop-shadow-[0_3px_3px_rgba(43,42,58,1)]">
+							Quick Match
+						</p>
+					</button>
+					<button
+						onPointerEnter={onHoverSound}
+						onClick={() => {
+							onClickSound();
+							setGameMode("tournament");
+						}}
+					>
+						<p className="text-right hover:text-[#FE2844] drop-shadow-[0_3px_3px_rgba(43,42,58,1)]">
+							Tournament
+						</p>
+					</button>
+					<button
+						onPointerEnter={onHoverSound}
+						onClick={() => {
+							onClickSound();
+							setGameMode("challenge");
+							setCanPlayersMove(true);
+						}}
+					>
+						<p className="text-right hover:text-[#FE2844] drop-shadow-[0_3px_3px_rgba(43,42,58,1)]">
+							Challenge
+						</p>
+					</button>
+					<button
+						onPointerEnter={onHoverSound}
+						onClick={() => {
+							onClickSound();
+							setGameMode("free");
+							setCanPlayersMove(true);
+						}}
+					>
+						<p className="text-right hover:text-[#FE2844] drop-shadow-[0_3px_3px_rgba(43,42,58,1)]">
+							Practice
+						</p>
+					</button>
+					<button
+						onPointerEnter={onHoverSound}
+						onClick={() => {
+							onClickSound();
+							setGameMode("credits");
+						}}
+					>
+						<p className="text-right hover:text-[#FE2844] drop-shadow-[0_3px_3px_rgba(43,42,58,1)]">
+							Credits
+						</p>
+					</button>
+				</div>
 			</div>
 		</div>
 	);

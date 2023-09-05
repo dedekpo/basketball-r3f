@@ -45,12 +45,10 @@ export default function Experience() {
 					gl={{
 						preserveDrawingBuffer: false,
 						powerPreference: "high-performance",
-						// antialias: isMobile ? false : true,
-						antialias: false,
+						antialias: isMobile ? false : true,
 					}}
-					// shadows={isMobile ? false : true}
-					shadows={false}
-					// dpr={isMobile ? 0.9 : 1}
+					shadows={isMobile ? false : true}
+					dpr={isMobile ? 0.95 : 1}
 					camera={{
 						position: [-1.5, 0.7, 0.5],
 						fov: 45,

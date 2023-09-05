@@ -3,7 +3,12 @@ import React, { useRef } from "react";
 import { useGLTF } from "@react-three/drei";
 import { GLTF } from "three-stdlib";
 import { CuboidCollider, RigidBody, vec3 } from "@react-three/rapier";
-import { player2MeshRef, playerMeshRef, useGameStore } from "@/lib/stores";
+import {
+	ballRef,
+	player2MeshRef,
+	playerMeshRef,
+	useGameStore,
+} from "@/lib/stores";
 import { playAudio } from "@/lib/utils";
 
 type GLTFResult = GLTF & {

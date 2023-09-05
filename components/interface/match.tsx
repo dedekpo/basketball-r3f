@@ -62,7 +62,7 @@ export default function Match() {
 	}, []);
 
 	useEffect(() => {
-		if (gameTime === 0) {
+		if (gameTime <= 0 && !(ballRef.current?.isOnAir || false)) {
 			handleEndGame();
 			return;
 		}
@@ -79,7 +79,7 @@ export default function Match() {
 			playerMeshRef.current
 		) {
 			resetPlayersPosition();
-			resetBallPosition();
+			resetBallPosition(ballRef.current?.lastPlayerWithBall);
 			resetShotClock();
 		}
 		const interval = setInterval(() => {
@@ -444,7 +444,7 @@ export default function Match() {
 						</div>
 					</div>
 				)}
-			{gameMode === "match" && !isGameRunning && (
+			{gameMode === "match" && !isGameRunning && !isGameEnded && (
 				<div className="absolute top-0 h-screen w-screen flex flex-col items-center justify-center">
 					<button
 						className="z-10 border-2 rounded-md bg-green-500 font-bold text-2xl text-gray-100 px-4 py-2 mt-4 shadow-md hover:bg-green-600 uppercase"
@@ -456,25 +456,25 @@ export default function Match() {
 			)}
 			{gameMode === "match" && isGameEnded && (
 				<div className="absolute top-0 h-screen w-screen flex items-center justify-center">
-					<div className="w-[50%] h-[80%] border-2 flex flex-col items-center justify-center rounded-md bg-gray-100 bg-opacity-50">
+					<div className="w-full h-full lg:w-[50%] lg:h-[80%] border-2 flex flex-col items-center justify-center rounded-md bg-gray-100 bg-opacity-50">
 						<span>Game Ended</span>
 						<div className="flex items-center gap-2">
 							<div className="flex flex-col items-center">
-								<span className="text-7xl font-bold">
+								<span className="text-5xl lg:text-7xl font-bold">
 									{player1Score}
 								</span>
 								<span>Player 1</span>
 							</div>
 							<span>—</span>
 							<div className="flex flex-col items-center">
-								<span className="text-7xl font-bold">
+								<span className="text-5xl lg:text-7xl font-bold">
 									{player2Score}
 								</span>
 								<span>Player 2</span>
 							</div>
 						</div>
-						<div className="border-t-2 w-[80%] mt-5" />
-						<span className="text-7xl font-bold my-5">
+						<div className="border-t-2 w-[80%] mt-2 lg:mt-5" />
+						<span className="text-4xl lg:text-7xl font-bold my-5">
 							{player1Score > player2Score
 								? "Player 1 Wins!"
 								: "Player 2 Wins!"}
@@ -482,7 +482,7 @@ export default function Match() {
 						<button
 							onPointerEnter={onHoverSound}
 							onClick={handleStartGame}
-							className="border-2 rounded-md w-[80%] text-2xl font-bold mt-3 text-white hover:text-[#FE2844] drop-shadow-[0_3px_3px_rgba(43,42,58,1)] h-[10%] hover:bg-gray-100"
+							className="border-2 rounded-md w-[80%] text-2xl font-bold lg:mt-3 text-white hover:text-[#FE2844] drop-shadow-[0_3px_3px_rgba(43,42,58,1)] h-[40px] lg:h-[50px] hover:bg-gray-100"
 						>
 							Play Again
 						</button>
@@ -493,7 +493,7 @@ export default function Match() {
 								setIsGameEnded(false);
 								setGameMode("menu");
 							}}
-							className="border-2 rounded-md w-[80%] text-2xl font-bold mt-3 text-white hover:text-[#FE2844] drop-shadow-[0_3px_3px_rgba(43,42,58,1)] h-[10%] hover:bg-gray-100"
+							className="border-2 rounded-md w-[80%] text-2xl font-bold mt-3 text-white hover:text-[#FE2844] drop-shadow-[0_3px_3px_rgba(43,42,58,1)] h-[40px] lg:h-[50px] hover:bg-gray-100"
 						>
 							Go to Menu
 						</button>
@@ -516,11 +516,34 @@ export default function Match() {
 							</p>
 						</div>
 					</div>
-					<div className="flex justify-evenly w-[200px] text-sm lg:text-xl">
-						<div className="">
-							{gameMinutes}:{gameSeconds}
+					<div className="flex justify-evenly w-[200px] text-sm lg:text-xl bg-gray-100 border-2 rounded-md">
+						<div className="flex items-center gap-1">
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								fill="none"
+								viewBox="0 0 24 24"
+								strokeWidth={1.5}
+								stroke="currentColor"
+								className="w-5 h-5"
+							>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
+								/>
+							</svg>
+
+							<span>
+								{gameMinutes}:{gameSeconds}
+							</span>
 						</div>
-						<div>{shotClock}</div>
+						<div
+							className={`${
+								shotClock <= 5 ? "text-red-500" : "text-black"
+							}`}
+						>
+							{shotClock}
+						</div>
 					</div>
 				</div>
 			)}

@@ -96,6 +96,21 @@ interface BallProps {
 	setCurrentHoop: (newHoop: Vector3) => void;
 }
 
+interface GamificationProps {
+	skinColor: string;
+	setSkinColor: (newSkinColor: string) => void;
+	shirtColor: string;
+	setShirtColor: (newShirtColor: string) => void;
+}
+
+export const useGamificationStore = create<GamificationProps>()((set) => ({
+	skinColor: "#ffdbac",
+	setSkinColor: (newSkinColor) => set(() => ({ skinColor: newSkinColor })),
+	shirtColor: "#ec1010",
+	setShirtColor: (newShirtColor) =>
+		set(() => ({ shirtColor: newShirtColor })),
+}));
+
 export const usePlayer1Store = create<PlayerProps>()((set) => ({
 	characterState: "Idle",
 	setCharacterState: (newState: CharacterStates) =>

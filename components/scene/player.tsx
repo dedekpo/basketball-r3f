@@ -209,6 +209,10 @@ export default function Player() {
 						z: currentHoop.z,
 					})
 				);
+				playerRef.current?.setLinvel(
+					{ x: currentHoop.x * 0.1, y: 0, z: currentHoop.z * 0.1 },
+					true
+				);
 			}
 
 			if (playerMeshRef.current.isIncreasing === undefined) {
