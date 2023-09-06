@@ -61,7 +61,7 @@ export default function Experience() {
 					<CameraControls />
 					{/* <OrbitControls /> */}
 					<Suspense>
-						<Physics debug>
+						<Physics>
 							<Player />
 							{(gameMode === "match" ||
 								gameMode === "tournament") && <PlayerCom />}
