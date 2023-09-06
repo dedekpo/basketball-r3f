@@ -16,6 +16,19 @@ const rotate = [
 	},
 ];
 
+export function calculateShotPenalty(
+	distance: number,
+	isBlocking: boolean | undefined
+) {
+	if (distance < 0.3) {
+		return isBlocking ? 0.4 : 0.3;
+	}
+	if (distance < 0.4) {
+		return isBlocking ? 0.15 : 0.1;
+	}
+	return 0;
+}
+
 export function rotatePlayer(
 	player: number,
 	right: boolean,

@@ -20,16 +20,33 @@ import { SHOT_METTER_VELOCITY, leftHoop, rightHoop } from "@/lib/config";
 import ShotPlayer2Metter from "./shot-metter2";
 import Player2Mesh from "./models/player2-mesh";
 import {
+	calculateShotPenalty,
 	getRandomNumber,
 	movePlayer,
 	playAudio,
 	rotatePlayer,
 } from "@/lib/utils";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const auxVector = new THREE.Vector3();
 
 export default function PlayerCom() {
+	const [shouldAggroTo, setShouldAggroTo] = useState<
+		THREE.Vector3 | undefined
+	>(undefined);
+	const [timer, setTimer] = useState(true);
+
+	useEffect(() => {
+		setTimeout(() => {
+			setTimer(!timer);
+			setShouldAggroTo(
+				Math.random() < 0.25
+					? vec3(ballRef.current?.translation())
+					: undefined
+			);
+		}, 500);
+	}, [timer]);
+
 	const { characterState, setCharacterState } = usePlayer2Store((state) => ({
 		characterState: state.characterState,
 		setCharacterState: state.setCharacterState,
@@ -43,13 +60,19 @@ export default function PlayerCom() {
 		})
 	);
 
-	const { gameMode, resetShotClock, setIsShotClocking, canPlayersMove } =
-		useGameStore((state) => ({
-			gameMode: state.gameMode,
-			resetShotClock: state.resetShotClock,
-			setIsShotClocking: state.setIsShotClocking,
-			canPlayersMove: state.canPlayersMove,
-		}));
+	const {
+		gameMode,
+		shotClock,
+		resetShotClock,
+		setIsShotClocking,
+		canPlayersMove,
+	} = useGameStore((state) => ({
+		gameMode: state.gameMode,
+		shotClock: state.shotClock,
+		resetShotClock: state.resetShotClock,
+		setIsShotClocking: state.setIsShotClocking,
+		canPlayersMove: state.canPlayersMove,
+	}));
 
 	useEffect(() => {
 		player2Ref.current?.collider(1).setEnabled(false);
@@ -78,8 +101,10 @@ export default function PlayerCom() {
 		if (
 			playerMeshRef.current?.isShooting &&
 			!player2MeshRef.current?.isJumping &&
-			distanceBetweenPlayers < 0.5
+			distanceBetweenPlayers < 0.5 &&
+			ballRef.current?.shouldBlock
 		) {
+			ballRef.current.shouldBlock = false;
 			setCharacterState("Block");
 			player2MeshRef.current!.isJumping = true;
 
@@ -100,6 +125,7 @@ export default function PlayerCom() {
 				playerPosition.distanceTo(player2MeshRef.current.IAShouldGoTo) <
 				0.22
 			) {
+				setShouldAggroTo(undefined);
 				player2MeshRef.current.IAShouldGoTo = undefined;
 				return;
 			}
@@ -160,44 +186,26 @@ export default function PlayerCom() {
 		}
 		if (playerWithBall === 0) {
 			// Player without ball
-
-			//if (otherPlayerPosition.x > playerPosition.x) {
-			if (true) {
-				// Other player is closest to hoop - should intercept
-				const positionToGo = auxVector
+			let positionToGo;
+			if (shouldAggroTo) {
+				positionToGo = shouldAggroTo;
+			} else {
+				positionToGo = auxVector
 					.addVectors(rightHoop, otherPlayerPosition)
 					.divideScalar(2);
-				const directionToGo = positionToGo.sub(playerPosition);
-				if (directionToGo.x > 0) {
-					rightP2 = true;
-				}
-				if (directionToGo.x < 0) {
-					leftP2 = true;
-				}
-				if (directionToGo.z > 0) {
-					backwardP2 = true;
-				}
-				if (directionToGo.z < 0) {
-					forwardP2 = true;
-				}
-			} else {
-				// Player is defending - should steal the ball
-				const directionToGo = auxVector.subVectors(
-					otherPlayerPosition,
-					playerPosition
-				);
-				if (directionToGo.x > 0) {
-					rightP2 = true;
-				}
-				if (directionToGo.x < 0) {
-					leftP2 = true;
-				}
-				if (directionToGo.z > 0) {
-					backwardP2 = true;
-				}
-				if (directionToGo.z < 0) {
-					forwardP2 = true;
-				}
+			}
+			const directionToGo = positionToGo.sub(playerPosition);
+			if (directionToGo.x > 0) {
+				rightP2 = true;
+			}
+			if (directionToGo.x < 0) {
+				leftP2 = true;
+			}
+			if (directionToGo.z > 0) {
+				backwardP2 = true;
+			}
+			if (directionToGo.z < 0) {
+				forwardP2 = true;
 			}
 		}
 		if (playerWithBall === 1) {
@@ -206,7 +214,7 @@ export default function PlayerCom() {
 			const distanceToPlaceToShoot = playerPosition.distanceTo(
 				player2MeshRef.current?.IAPlaceToShoot || leftHoop
 			);
-			if (distanceToPlaceToShoot > 0.22) {
+			if (distanceToPlaceToShoot > 0.22 && shotClock > 1) {
 				const directionToGo = auxVector.subVectors(
 					player2MeshRef.current?.IAPlaceToShoot || leftHoop,
 					playerPosition
@@ -284,8 +292,16 @@ export default function PlayerCom() {
 		}
 
 		if (player2MeshRef.current.isShooting && ballRef.current) {
-			ballRef.current.shouldShot = true;
-			ballRef.current.shotProgress = player2MeshRef.current.shotProgress;
+			const distanceBetweenPlayers = vec3(
+				playerRef.current?.translation()
+			).distanceTo(vec3(player2Ref.current?.translation()));
+			let shotPenalty = calculateShotPenalty(
+				distanceBetweenPlayers,
+				playerMeshRef.current?.isJumping
+			);
+			if (distanceBetweenPlayers) ballRef.current.shouldShot = true;
+			ballRef.current.shotProgress =
+				(player2MeshRef.current.shotProgress || 0) - shotPenalty;
 			player2MeshRef.current.isShooting = false;
 		}
 	}
@@ -357,8 +373,8 @@ export default function PlayerCom() {
 			>
 				<CapsuleCollider args={[0.09, 0.1]} position={[0, 0.19, 0]} />
 				<ConeCollider
-					args={[0.17, 0.15]}
-					position={[0, 0.6, 0]}
+					args={[0.12, 0.17]}
+					position={[0, 0.55, 0]}
 					rotation={[0, 0, Math.PI]}
 				/>
 				<Player2Mesh />

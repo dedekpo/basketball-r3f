@@ -59,9 +59,12 @@ function Color({ color, type }: { color: string; type: "skin" | "shirt" }) {
 	return (
 		<div
 			onClick={() => options[type].handle(color)}
-			className={`cursor-pointer flex items-center justify-center border-2 w-[25px] h-[25px] lg:w-[40px] lg:h-[40px] bg-[${color}] ${
+			className={`cursor-pointer flex items-center justify-center border-2 w-[25px] h-[25px] lg:w-[40px] lg:h-[40px] ${
 				options[type].color === color ? "border-black" : ""
 			}`}
+			style={{
+				backgroundColor: color,
+			}}
 		>
 			<span
 				className={`${options[type].color === color ? "" : "hidden"}`}

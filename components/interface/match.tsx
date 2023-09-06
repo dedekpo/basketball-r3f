@@ -100,11 +100,13 @@ export default function Match() {
 		resetTime();
 		resetShotClock();
 		playAudio("referee-short");
-		setIsGameRunning(true);
 		setIsGameEnded(false);
 		setCanPlayersMove(true);
 		resetPlayersPosition();
-		resetBallPosition();
+		ballRef.current?.setLinvel({ x: 0, y: 0, z: 0 }, true);
+		ballRef.current?.setAngvel({ x: 0, y: 0, z: 0 }, true);
+		ballRef.current?.setTranslation({ x: -1, y: 1, z: 0 }, true);
+		setIsGameRunning(true);
 	}
 
 	function handleEndGame() {
@@ -121,10 +123,10 @@ export default function Match() {
 			}
 		}
 		playAudio("referee-short");
-		setIsGameRunning(false);
 		setCanPlayersMove(false);
 		resetPlayersPosition();
 		resetBallPosition();
+		setIsGameRunning(false);
 		setTimeout(() => {
 			setIsGameEnded(true);
 		}, 2000);
@@ -503,13 +505,13 @@ export default function Match() {
 			{isGameRunning && (
 				<div className="flex flex-col items-center absolute left-0 right-0 top-2 lg:top-4">
 					<div className="flex justify-evenly w-[200px] rounded-md border-4 opacity-90 bg-[conic-gradient(at_top_left,_var(--tw-gradient-stops))] from-gray-900 to-gray-600 bg-gradient-to-r">
-						<div className="flex flex-col text-white text-center py-2 ">
+						<div className="flex flex-col text-white text-center lg:py-2">
 							<p className="text-xs">Player 1:</p>
 							<p className="text-xl lg:text-3xl font-bold">
 								{player1Score}
 							</p>
 						</div>
-						<div className="flex flex-col text-white text-center py-2 ">
+						<div className="flex flex-col text-white text-center lg:py-2">
 							<p className="text-xs">Player 2:</p>
 							<p className="text-xl lg:text-3xl font-bold">
 								{player2Score}

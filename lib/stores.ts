@@ -21,6 +21,8 @@ interface BallRefProps extends RapierRigidBody {
 	cantSteal?: boolean;
 	isOnAir?: boolean;
 	lastPlayerWithBall?: number;
+	shouldBlock?: boolean;
+	grabbedAt?: number;
 }
 
 export const playerRef = createRef() as RefObject<RapierRigidBody>;

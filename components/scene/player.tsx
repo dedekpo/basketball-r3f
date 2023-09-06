@@ -16,11 +16,13 @@ import {
 	usePlayer1Store,
 	useGameStore,
 	useJoystickStore,
+	player2Ref,
 } from "@/lib/stores";
 import { SHOT_METTER_VELOCITY, leftHoop, rightHoop } from "@/lib/config";
 import ShotPlayer1Metter from "./shot-metter";
 import PlayerMesh from "./models/player-mesh";
 import {
+	calculateShotPenalty,
 	getRandomNumber,
 	movePlayer,
 	playAudio,
@@ -194,9 +196,6 @@ export default function Player() {
 		if (!playerMeshRef.current?.hasBall || !playerMeshRef.current) {
 			return;
 		}
-		// if (!playerMeshRef.current) {
-		// 	return;
-		// }
 
 		if (jumpPressed) {
 			if (!playerMeshRef.current.isShooting) {
@@ -208,10 +207,6 @@ export default function Player() {
 						y: 0.3,
 						z: currentHoop.z,
 					})
-				);
-				playerRef.current?.setLinvel(
-					{ x: currentHoop.x * 0.1, y: 0, z: currentHoop.z * 0.1 },
-					true
 				);
 			}
 
@@ -228,8 +223,8 @@ export default function Player() {
 				ballRef.current
 			) {
 				ballRef.current.shouldShot = true;
-				ballRef.current.shotProgress =
-					playerMeshRef.current.shotProgress;
+				ballRef.current.shotProgress = 0;
+				ballRef.current.shouldBlock = Math.random() > 0.5;
 				playerMeshRef.current.isShooting = false;
 				playerMeshRef.current.isIncreasing = true;
 				playerMeshRef.current.shotProgress = 0;
@@ -248,8 +243,17 @@ export default function Player() {
 		}
 
 		if (playerMeshRef.current.isShooting && ballRef.current) {
+			const distanceBetweenPlayers = vec3(
+				playerRef.current?.translation()
+			).distanceTo(vec3(player2Ref.current?.translation()));
+			let shotPenalty = calculateShotPenalty(
+				distanceBetweenPlayers,
+				player2MeshRef.current?.isJumping
+			);
 			ballRef.current.shouldShot = true;
-			ballRef.current.shotProgress = playerMeshRef.current.shotProgress;
+			ballRef.current.shotProgress =
+				(playerMeshRef.current.shotProgress || 0) - shotPenalty;
+			ballRef.current.shouldBlock = Math.random() > 0.5;
 			playerMeshRef.current.isShooting = false;
 			playerMeshRef.current.isIncreasing = true;
 			playerMeshRef.current.shotProgress = 0;
@@ -274,7 +278,6 @@ export default function Player() {
 			<RigidBody
 				ref={playerRef}
 				name="player"
-				mass={1}
 				colliders={false}
 				enabledRotations={[false, false, false]}
 				position={[-1, 0.22, 0]}
@@ -327,6 +330,7 @@ export default function Player() {
 								setIsShotClocking(true);
 								ballRef.current!.lastPlayerWithBall = 0;
 								setPlayerWithBall(0);
+								ballRef.current!.grabbedAt = Date.now();
 								ballRef.current!.cantSteal = true;
 								setTimeout(() => {
 									ballRef.current!.cantSteal = false;
@@ -339,8 +343,8 @@ export default function Player() {
 			>
 				<CapsuleCollider args={[0.09, 0.1]} position={[0, 0.19, 0]} />
 				<ConeCollider
-					args={[0.17, 0.15]}
-					position={[0, 0.6, 0]}
+					args={[0.12, 0.17]}
+					position={[0, 0.55, 0]}
 					rotation={[0, 0, Math.PI]}
 				/>
 				<PlayerMesh />
