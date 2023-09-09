@@ -59,17 +59,16 @@ export default function Ball() {
 		ballRef.current!.isOnAir = true;
 
 		const ballPosition = vec3(playerRef.current?.translation());
-		direction.subVectors(currentHoop, ballPosition).normalize();
+		// direction.subVectors(currentHoop, ballPosition).normalize();
 
 		const ballInHeadPosition = vec3({
 			x: ballPosition.x,
-			y: 0.55,
+			y: 0.6,
 			z: ballPosition.z,
-		}).add(direction.clone().multiplyScalar(0.1));
-
-		direction.subVectors(currentHoop, ballInHeadPosition).normalize();
+		});
 		ballRef.current?.setLinvel({ x: 0, y: 0, z: 0 }, true);
 		ballRef.current?.setTranslation(ballInHeadPosition, true);
+		direction.subVectors(currentHoop, ballInHeadPosition).normalize();
 
 		const distanceToHoop = ballInHeadPosition.distanceTo(currentHoop);
 		const delta = MAX_DISTANCE - MIN_DISTANCE;
@@ -84,7 +83,11 @@ export default function Ball() {
 			MAX_STRENGH,
 			(distanceToHoop - MIN_DISTANCE) / (MAX_DISTANCE - MIN_DISTANCE)
 		);
-		const shotStrength = (strenghGivenDistance + 0.43 * fixDelta) / 10000;
+		const shotStrength = clamp(
+			(strenghGivenDistance + 0.43 * fixDelta) / 10000,
+			0,
+			0.0008
+		);
 
 		const shotPrecision = Math.abs(
 			Math.round((ballRef.current?.shotProgress || 0) * 100) / 100 - 1
