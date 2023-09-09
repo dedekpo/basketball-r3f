@@ -84,11 +84,7 @@ export default function Ball() {
 			MAX_STRENGH,
 			(distanceToHoop - MIN_DISTANCE) / (MAX_DISTANCE - MIN_DISTANCE)
 		);
-		const shotStrength = clamp(
-			(strenghGivenDistance + 0.43 * fixDelta) / 10000,
-			0,
-			0.0008
-		);
+		const shotStrength = (strenghGivenDistance + 0.43 * fixDelta) / 10000;
 
 		const shotPrecision = Math.abs(
 			Math.round((ballRef.current?.shotProgress || 0) * 100) / 100 - 1
