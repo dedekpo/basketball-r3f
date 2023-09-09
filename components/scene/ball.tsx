@@ -123,7 +123,7 @@ export default function Ball() {
 
 		setPlayerWithBall(undefined);
 		playerMeshRef.current!.hasBall = false;
-		ballRef.current.shouldShot = false;
+		ballRef.current!.shouldShot = false;
 	};
 
 	useFrame(({ clock }) => {
