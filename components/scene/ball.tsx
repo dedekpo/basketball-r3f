@@ -59,16 +59,17 @@ export default function Ball() {
 		ballRef.current!.isOnAir = true;
 
 		const ballPosition = vec3(playerRef.current?.translation());
-		// direction.subVectors(currentHoop, ballPosition).normalize();
+		direction.subVectors(currentHoop, ballPosition).normalize();
 
 		const ballInHeadPosition = vec3({
 			x: ballPosition.x,
-			y: 0.6,
+			y: 0.55,
 			z: ballPosition.z,
-		});
+		}).add(direction.clone().multiplyScalar(0.1));
+
+		direction.subVectors(currentHoop, ballInHeadPosition).normalize();
 		ballRef.current?.setLinvel({ x: 0, y: 0, z: 0 }, true);
 		ballRef.current?.setTranslation(ballInHeadPosition, true);
-		direction.subVectors(currentHoop, ballInHeadPosition).normalize();
 
 		const distanceToHoop = ballInHeadPosition.distanceTo(currentHoop);
 		const delta = MAX_DISTANCE - MIN_DISTANCE;
@@ -122,6 +123,7 @@ export default function Ball() {
 
 		setPlayerWithBall(undefined);
 		playerMeshRef.current!.hasBall = false;
+		ballRef.current.shouldShot = false;
 	};
 
 	useFrame(({ clock }) => {
@@ -131,7 +133,6 @@ export default function Ball() {
 		}
 		if (ballRef.current && ballRef.current.shouldShot) {
 			handleShot();
-			ballRef.current.shouldShot = false;
 		}
 	});
 
