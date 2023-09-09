@@ -299,7 +299,8 @@ export default function Player() {
 							if (
 								!playerMeshRef.current?.hasBall &&
 								!player2MeshRef.current?.isShooting &&
-								!ballRef.current?.cantSteal
+								!ballRef.current?.cantSteal &&
+								!playerMeshRef.current?.IAShouldGoTo
 							) {
 								if (
 									playerMeshRef.current!.isJumping &&

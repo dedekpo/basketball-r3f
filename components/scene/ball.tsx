@@ -1,5 +1,5 @@
 import { ballRef, players, useBallStore, useGameStore } from "@/lib/stores";
-import { playAudio } from "@/lib/utils";
+import { distanceShotPenalty, playAudio } from "@/lib/utils";
 import { useFrame } from "@react-three/fiber";
 import { BallCollider, RigidBody, vec3 } from "@react-three/rapier";
 import { useRef } from "react";
@@ -29,6 +29,10 @@ export default function Ball() {
 			currentHoop: state.currentHoop,
 		})
 	);
+
+	const { resetShotClock } = useGameStore((state) => ({
+		resetShotClock: state.resetShotClock,
+	}));
 
 	const playerRef = players[playerWithBall || 0].playerRef;
 	const playerMeshRef = players[playerWithBall || 0].playerMeshRef;
@@ -90,9 +94,14 @@ export default function Ball() {
 			0.0008
 		);
 
-		const shotPrecision = Math.abs(
-			Math.round((ballRef.current?.shotProgress || 0) * 100) / 100 - 1
-		);
+		const isPerfectShot = ballRef.current?.shotProgress || 0 >= 0.98;
+		const perfectShotPenalty = isPerfectShot ? 0 : 1;
+
+		const shotPrecision =
+			Math.abs(
+				Math.round((ballRef.current?.shotProgress || 0) * 100) / 100 - 1
+			) -
+			distanceShotPenalty(distanceToHoop) * perfectShotPenalty;
 
 		const distanceModifier = (distanceToHoop / delta) * DISTANCE_DIFFICULTY;
 
@@ -174,6 +183,7 @@ export default function Ball() {
 					) {
 						playAudio("ball-hit-rim");
 						ballSoundRef.current.isSoundPlaying = true;
+						resetShotClock();
 						setTimeout(() => {
 							ballSoundRef.current.isSoundPlaying = false;
 						}, 100); // Adjust the time as needed to make sure the sound is played once.

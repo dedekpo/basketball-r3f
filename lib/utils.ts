@@ -16,6 +16,21 @@ const rotate = [
 	},
 ];
 
+//2.45 - 2.17 - 0.87
+
+export function distanceShotPenalty(distance: number) {
+	if (distance > 2.45) {
+		return 0.6;
+	}
+	if (distance > 1.67) {
+		return 0.4;
+	}
+	if (distance > 0.87) {
+		return 0.2;
+	}
+	return 0;
+}
+
 export function calculateShotPenalty(
 	distance: number,
 	isBlocking: boolean | undefined

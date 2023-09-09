@@ -26,27 +26,11 @@ import {
 	playAudio,
 	rotatePlayer,
 } from "@/lib/utils";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 const auxVector = new THREE.Vector3();
 
 export default function PlayerCom() {
-	const [shouldAggroTo, setShouldAggroTo] = useState<
-		THREE.Vector3 | undefined
-	>(undefined);
-	const [timer, setTimer] = useState(true);
-
-	useEffect(() => {
-		setTimeout(() => {
-			setTimer(!timer);
-			setShouldAggroTo(
-				Math.random() < 0.25
-					? vec3(ballRef.current?.translation())
-					: undefined
-			);
-		}, 500);
-	}, [timer]);
-
 	const { characterState, setCharacterState } = usePlayer2Store((state) => ({
 		characterState: state.characterState,
 		setCharacterState: state.setCharacterState,
@@ -125,12 +109,58 @@ export default function PlayerCom() {
 				playerPosition.distanceTo(player2MeshRef.current.IAShouldGoTo) <
 				0.22
 			) {
-				setShouldAggroTo(undefined);
 				player2MeshRef.current.IAShouldGoTo = undefined;
 				return;
 			}
 			const directionToGo = auxVector.subVectors(
 				player2MeshRef.current.IAShouldGoTo,
+				playerPosition
+			);
+			if (directionToGo.x > 0) {
+				rightP2 = true;
+			}
+			if (directionToGo.x < 0) {
+				leftP2 = true;
+			}
+			if (directionToGo.z > 0) {
+				backwardP2 = true;
+			}
+			if (directionToGo.z < 0) {
+				forwardP2 = true;
+			}
+			movePlayer(
+				player2Ref,
+				player2MeshRef,
+				rightP2,
+				leftP2,
+				forwardP2,
+				backwardP2,
+				characterState,
+				setCharacterState
+			);
+			rotatePlayer(
+				1,
+				rightP2,
+				leftP2,
+				forwardP2,
+				backwardP2,
+				player2MeshRef,
+				delta * 0.5
+			);
+			return;
+		}
+
+		if (player2MeshRef.current.IAShouldAggroTo) {
+			if (
+				playerPosition.distanceTo(
+					player2MeshRef.current.IAShouldAggroTo
+				) < 0.22
+			) {
+				player2MeshRef.current.IAShouldAggroTo = undefined;
+				return;
+			}
+			const directionToGo = auxVector.subVectors(
+				player2MeshRef.current.IAShouldAggroTo,
 				playerPosition
 			);
 			if (directionToGo.x > 0) {
@@ -186,13 +216,27 @@ export default function PlayerCom() {
 		}
 		if (playerWithBall === 0) {
 			// Player without ball
-			let positionToGo;
-			if (shouldAggroTo) {
-				positionToGo = shouldAggroTo;
-			} else {
-				positionToGo = auxVector
-					.addVectors(rightHoop, otherPlayerPosition)
-					.divideScalar(2);
+			player2MeshRef.current.isInPositionByTime =
+				(player2MeshRef.current.isInPositionByTime || 0) + delta;
+
+			let positionToGo = auxVector
+				.addVectors(rightHoop, otherPlayerPosition)
+				.divideScalar(2);
+
+			if (player2MeshRef.current.isInPositionByTime > 2) {
+				player2MeshRef.current.isInPositionByTime = 0;
+				if (Math.random() < 0.4) {
+					const ballPosition = vec3(ballRef.current?.translation());
+					const aggroDirection = auxVector
+						.subVectors(ballPosition, playerPosition)
+						.normalize()
+						.setY(0.22);
+					const shouldAgroTo = ballPosition.add(
+						aggroDirection.multiplyScalar(0.15)
+					);
+
+					player2MeshRef.current.IAShouldAggroTo = shouldAgroTo;
+				}
 			}
 			const directionToGo = positionToGo.sub(playerPosition);
 			if (directionToGo.x > 0) {
@@ -234,7 +278,10 @@ export default function PlayerCom() {
 			} else {
 				if (player2MeshRef.current.hasBall) {
 					player2MeshRef.current.shotProgress = 0;
-					player2MeshRef.current.IAShotPrecision = Math.random();
+					player2MeshRef.current.IAShotPrecision = getRandomNumber(
+						0.2,
+						1
+					);
 					player2MeshRef.current.isShooting = true;
 					setCharacterState("Shoot");
 				}
@@ -328,7 +375,8 @@ export default function PlayerCom() {
 						if (
 							!player2MeshRef.current?.hasBall &&
 							!playerMeshRef.current?.isShooting &&
-							!ballRef.current?.cantSteal
+							!ballRef.current?.cantSteal &&
+							!player2MeshRef.current?.IAShouldGoTo
 						) {
 							if (
 								player2MeshRef.current!.isJumping &&

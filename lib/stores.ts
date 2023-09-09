@@ -12,7 +12,9 @@ interface ShotMeterProps extends Group {
 	isIncreasing?: boolean;
 	IAShotPrecision?: number;
 	IAShouldGoTo?: Vector3;
+	IAShouldAggroTo?: Vector3;
 	IAPlaceToShoot?: Vector3;
+	isInPositionByTime?: number;
 }
 
 interface BallRefProps extends RapierRigidBody {
