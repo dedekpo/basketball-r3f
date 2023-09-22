@@ -34,10 +34,10 @@ export default function Ball() {
     resetShotClock: state.resetShotClock,
   }));
 
-  function handleBallPosition(elapsedTime: number) {
-    const playerRef = players[playerWithBall || 0].playerRef;
-    const playerMeshRef = players[playerWithBall || 0].playerMeshRef;
+  const playerRef = players[playerWithBall || 0].playerRef;
+  const playerMeshRef = players[playerWithBall || 0].playerMeshRef;
 
+  function handleBallPosition(elapsedTime: number) {
     if (!ballRef.current) return;
     const playerDirection = playerMeshRef.current
       ?.getWorldDirection(direction)
@@ -58,13 +58,11 @@ export default function Ball() {
   }
 
   const handleShot = () => {
-    const playerRef = players[playerWithBall || 0].playerRef;
-    const playerMeshRef = players[playerWithBall || 0].playerMeshRef;
-
-    if (!ballRef.current || !playerMeshRef.current) return;
+    if (!ballRef.current || !playerMeshRef.current || !playerRef.current)
+      return;
     ballRef.current!.isOnAir = true;
 
-    const ballPosition = vec3(playerRef.current?.translation());
+    const ballPosition = vec3(playerRef.current.translation());
     direction.subVectors(currentHoop, ballPosition).normalize();
 
     const ballInHeadPosition = vec3({
