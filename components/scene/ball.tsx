@@ -34,11 +34,11 @@ export default function Ball() {
     resetShotClock: state.resetShotClock,
   }));
 
-  const playerRef = players[playerWithBall || 0].playerRef;
-  const playerMeshRef = players[playerWithBall || 0].playerMeshRef;
+  const playerRef = players[0].playerRef;
+  const playerMeshRef = players[0].playerMeshRef;
 
   function handleBallPosition(elapsedTime: number) {
-    if (!ballRef.current) return;
+    if (!ballRef.current || playerWithBall === undefined) return;
     const playerDirection = playerMeshRef.current
       ?.getWorldDirection(direction)
       .normalize();
@@ -58,9 +58,14 @@ export default function Ball() {
   }
 
   const handleShot = () => {
-    if (!ballRef.current || !playerMeshRef.current || !playerRef.current)
+    if (
+      !ballRef.current ||
+      !playerMeshRef.current ||
+      !playerRef.current ||
+      !ballRef.current.shouldShot
+    )
       return;
-    ballRef.current!.isOnAir = true;
+    ballRef.current.isOnAir = true;
 
     const ballPosition = vec3(playerRef.current.translation());
     direction.subVectors(currentHoop, ballPosition).normalize();
@@ -139,12 +144,8 @@ export default function Ball() {
 
   useFrame(({ clock }) => {
     const elapsedTime = clock.elapsedTime;
-    if (playerWithBall !== undefined) {
-      handleBallPosition(elapsedTime);
-    }
-    if (ballRef.current && ballRef.current.shouldShot) {
-      handleShot();
-    }
+    handleBallPosition(elapsedTime);
+    handleShot();
   });
 
   return (
@@ -162,11 +163,12 @@ export default function Ball() {
         args={[0.04]}
         onCollisionEnter={({ other }) => {
           if (
-            ballRef.current!.isOnAir &&
+            ballRef.current &&
+            ballRef.current.isOnAir &&
             other.rigidBodyObject?.name !== "player" &&
             other.rigidBodyObject?.name !== "player2"
           ) {
-            ballRef.current!.isOnAir = false;
+            ballRef.current.isOnAir = false;
           }
           if (
             other.rigidBodyObject?.name === "floor" &&
