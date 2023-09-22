@@ -13,6 +13,7 @@ import {
   MIN_STRENGH,
   SHOT_DIFFICULTY,
 } from "@/lib/config";
+import { clamp } from "three/src/math/MathUtils";
 
 export const direction = new THREE.Vector3();
 
@@ -86,17 +87,22 @@ export default function Ball() {
       MAX_STRENGH,
       (distanceToHoop - MIN_DISTANCE) / (MAX_DISTANCE - MIN_DISTANCE)
     );
-    let shotStrength = (strenghGivenDistance + 0.43 * fixDelta) / 10000;
-    shotStrength > 0.0008 ? 0.0008 : shotStrength;
+    const shotStrength = clamp(
+      (strenghGivenDistance + 0.43 * fixDelta) / 10000,
+      0,
+      0.0008
+    );
 
     const isPerfectShot = ballRef.current.shotProgress || 0 >= 0.98;
     const perfectShotPenalty = isPerfectShot ? 0 : 1;
 
-    const shotPrecision =
+    let shotPrecision =
       Math.abs(
         Math.round((ballRef.current.shotProgress || 0) * 100) / 100 - 1
       ) -
       distanceShotPenalty(distanceToHoop) * perfectShotPenalty;
+
+    shotPrecision = shotPrecision <= 0 ? 0.01 : shotPrecision;
 
     const distanceModifier = (distanceToHoop / delta) * DISTANCE_DIFFICULTY;
 
