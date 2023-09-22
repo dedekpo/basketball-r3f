@@ -66,9 +66,10 @@ export default function Ball() {
 
     const ballInHeadPosition = vec3({
       x: ballPosition.x,
-      y: 0.55,
+      y: 0.7,
       z: ballPosition.z,
-    }).add(direction.clone().multiplyScalar(0.1));
+    });
+    // .add(direction.clone().multiplyScalar(0.1));
 
     direction.subVectors(currentHoop, ballInHeadPosition).normalize();
     ballRef.current.setLinvel({ x: 0, y: 0, z: 0 }, true);
@@ -101,8 +102,6 @@ export default function Ball() {
         Math.round((ballRef.current.shotProgress || 0) * 100) / 100 - 1
       ) -
       distanceShotPenalty(distanceToHoop) * perfectShotPenalty;
-
-    shotPrecision = shotPrecision <= 0 ? 0.01 : shotPrecision;
 
     const distanceModifier = (distanceToHoop / delta) * DISTANCE_DIFFICULTY;
 
