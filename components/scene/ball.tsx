@@ -34,10 +34,10 @@ export default function Ball() {
     resetShotClock: state.resetShotClock,
   }));
 
-  const playerRef = players[playerWithBall || 0].playerRef;
-  const playerMeshRef = players[playerWithBall || 0].playerMeshRef;
-
   function handleBallPosition(elapsedTime: number) {
+    const playerRef = players[playerWithBall || 0].playerRef;
+    const playerMeshRef = players[playerWithBall || 0].playerMeshRef;
+
     if (!ballRef.current) return;
     const playerDirection = playerMeshRef.current
       ?.getWorldDirection(direction)
@@ -58,6 +58,9 @@ export default function Ball() {
   }
 
   const handleShot = () => {
+    const playerRef = players[playerWithBall || 0].playerRef;
+    const playerMeshRef = players[playerWithBall || 0].playerMeshRef;
+
     if (!ballRef.current || !playerMeshRef.current) return;
     ballRef.current!.isOnAir = true;
 
@@ -66,10 +69,9 @@ export default function Ball() {
 
     const ballInHeadPosition = vec3({
       x: ballPosition.x,
-      y: 0.7,
+      y: 0.55,
       z: ballPosition.z,
-    });
-    // .add(direction.clone().multiplyScalar(0.1));
+    }).add(direction.clone().multiplyScalar(0.1));
 
     direction.subVectors(currentHoop, ballInHeadPosition).normalize();
     ballRef.current.setLinvel({ x: 0, y: 0, z: 0 }, true);
@@ -102,6 +104,8 @@ export default function Ball() {
         Math.round((ballRef.current.shotProgress || 0) * 100) / 100 - 1
       ) -
       distanceShotPenalty(distanceToHoop) * perfectShotPenalty;
+
+    shotPrecision = shotPrecision <= 0 ? 0.01 : shotPrecision;
 
     const distanceModifier = (distanceToHoop / delta) * DISTANCE_DIFFICULTY;
 
