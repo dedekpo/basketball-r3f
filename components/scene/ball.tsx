@@ -2,7 +2,7 @@ import { ballRef, players, useBallStore, useGameStore } from "@/lib/stores";
 import { distanceShotPenalty, playAudio } from "@/lib/utils";
 import { useFrame } from "@react-three/fiber";
 import { BallCollider, RigidBody, vec3 } from "@react-three/rapier";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import { BallMesh } from "./models/ball-mesh";
 import {
@@ -35,6 +35,12 @@ export default function Ball() {
 
   const playerRef = players[playerWithBall || 0].playerRef;
   const playerMeshRef = players[playerWithBall || 0].playerMeshRef;
+
+  useEffect(() => {
+    if (ballRef.current && ballRef.current.shouldShot) {
+      handleShot();
+    }
+  }, [ballRef.current, ballRef.current?.shouldShot]);
 
   function handleBallPosition(elapsedTime: number) {
     if (
@@ -110,11 +116,6 @@ export default function Ball() {
 
     const distanceModifier = (distanceToHoop / delta) * DISTANCE_DIFFICULTY;
 
-    console.log("--- Shooting ---");
-    console.log("direction ? ", direction);
-    console.log("shotPrecision ? ", shotPrecision);
-    console.log("shotStrength ? ", shotStrength);
-
     ballRef.current.applyImpulse(
       {
         x:
@@ -136,7 +137,23 @@ export default function Ball() {
       true
     );
 
-    console.log("--- End ---");
+    console.log({
+      x:
+        (direction.x +
+          (Math.random() - 0.5) *
+            SHOT_DIFFICULTY *
+            shotPrecision *
+            distanceModifier) *
+        shotStrength,
+      y: (direction.y + shotHeight) * shotStrength,
+      z:
+        (direction.z +
+          (Math.random() - 0.5) *
+            SHOT_DIFFICULTY *
+            shotPrecision *
+            distanceModifier) *
+        shotStrength,
+    });
 
     if (shotPrecision < 0.02) {
       playAudio("perfect-release");
@@ -150,7 +167,7 @@ export default function Ball() {
   useFrame(({ clock }) => {
     const elapsedTime = clock.elapsedTime;
     handleBallPosition(elapsedTime);
-    handleShot();
+    // handleShot();
   });
 
   return (
