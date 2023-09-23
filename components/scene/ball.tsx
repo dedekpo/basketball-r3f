@@ -37,7 +37,12 @@ export default function Ball() {
   const playerMeshRef = players[playerWithBall || 0].playerMeshRef;
 
   function handleBallPosition(elapsedTime: number) {
-    if (!ballRef.current || playerWithBall === undefined) return;
+    if (
+      !ballRef.current ||
+      playerWithBall === undefined ||
+      ballRef.current.shouldShot
+    )
+      return;
     const playerDirection = playerMeshRef.current
       ?.getWorldDirection(direction)
       .normalize();
