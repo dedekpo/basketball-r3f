@@ -110,6 +110,11 @@ export default function Ball() {
 
     const distanceModifier = (distanceToHoop / delta) * DISTANCE_DIFFICULTY;
 
+    console.log("--- Shooting ---");
+    console.log("direction ? ", direction);
+    console.log("shotPrecision ? ", shotPrecision);
+    console.log("shotStrength ? ", shotStrength);
+
     ballRef.current.applyImpulse(
       {
         x:
@@ -130,6 +135,8 @@ export default function Ball() {
       },
       true
     );
+
+    console.log("--- End ---");
 
     if (shotPrecision < 0.02) {
       playAudio("perfect-release");
