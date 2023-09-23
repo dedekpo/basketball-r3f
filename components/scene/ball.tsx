@@ -70,7 +70,6 @@ export default function Ball() {
     )
       return;
     ballRef.current.isOnAir = true;
-    ballRef.current.wakeUp();
 
     const ballPosition = vec3(playerRef.current.translation());
     direction.subVectors(currentHoop, ballPosition).normalize();
