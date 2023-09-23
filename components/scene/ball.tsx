@@ -70,13 +70,14 @@ export default function Ball() {
     )
       return;
     ballRef.current.isOnAir = true;
+    ballRef.current.wakeUp();
 
     const ballPosition = vec3(playerRef.current.translation());
     direction.subVectors(currentHoop, ballPosition).normalize();
 
     const ballInHeadPosition = vec3({
       x: ballPosition.x,
-      y: 0.8,
+      y: 0.55,
       z: ballPosition.z,
     }).add(direction.clone().multiplyScalar(0.1));
 
@@ -112,9 +113,21 @@ export default function Ball() {
 
     ballRef.current.applyImpulse(
       {
-        x: direction.x * shotStrength,
+        x:
+          (direction.x +
+            (Math.random() - 0.5) *
+              SHOT_DIFFICULTY *
+              shotPrecision *
+              distanceModifier) *
+          shotStrength,
         y: (direction.y + shotHeight) * shotStrength,
-        z: direction.z * shotStrength,
+        z:
+          (direction.z +
+            (Math.random() - 0.5) *
+              SHOT_DIFFICULTY *
+              shotPrecision *
+              distanceModifier) *
+          shotStrength,
       },
       true
     );
