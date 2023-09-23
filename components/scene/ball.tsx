@@ -76,7 +76,7 @@ export default function Ball() {
 
     const ballInHeadPosition = vec3({
       x: ballPosition.x,
-      y: 0.55,
+      y: 0.8,
       z: ballPosition.z,
     }).add(direction.clone().multiplyScalar(0.1));
 
