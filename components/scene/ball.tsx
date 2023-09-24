@@ -137,24 +137,6 @@ export default function Ball() {
       true
     );
 
-    console.log({
-      x:
-        (direction.x +
-          (Math.random() - 0.5) *
-            SHOT_DIFFICULTY *
-            shotPrecision *
-            distanceModifier) *
-        shotStrength,
-      y: (direction.y + shotHeight) * shotStrength,
-      z:
-        (direction.z +
-          (Math.random() - 0.5) *
-            SHOT_DIFFICULTY *
-            shotPrecision *
-            distanceModifier) *
-        shotStrength,
-    });
-
     if (shotPrecision < 0.02) {
       playAudio("perfect-release");
     }
@@ -167,7 +149,6 @@ export default function Ball() {
   useFrame(({ clock }) => {
     const elapsedTime = clock.elapsedTime;
     handleBallPosition(elapsedTime);
-    // handleShot();
   });
 
   return (
