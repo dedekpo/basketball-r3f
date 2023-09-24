@@ -23,6 +23,7 @@ import { isMobile } from "react-device-detect";
 import { City } from "./city";
 import { onClickSound } from "@/lib/utils";
 import { useResetPositions } from "@/hooks/useResetPositions";
+import { SDKStopGame } from "@/lib/game-controll";
 
 export default function Experience() {
   const { gameMode } = useGameStore((state) => ({
@@ -109,6 +110,7 @@ function CameraControls() {
       setGameMode("menu");
       onClickSound();
       setCanPlayersMove(false);
+      SDKStopGame();
       resetShotClock();
       resetTime();
       resetGameScore();

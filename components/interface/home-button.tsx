@@ -1,6 +1,7 @@
 "use client";
 
 import { useResetPositions } from "@/hooks/useResetPositions";
+import { SDKStopGame } from "@/lib/game-controll";
 import { useGameStore } from "@/lib/stores";
 import { onClickSound, onHoverSound } from "@/lib/utils";
 
@@ -29,6 +30,7 @@ export default function HomeButton() {
 		onClickSound();
 		setGameMode("menu");
 		setCanPlayersMove(false);
+		SDKStopGame();
 		resetShotClock();
 		resetTime();
 		resetGameScore();

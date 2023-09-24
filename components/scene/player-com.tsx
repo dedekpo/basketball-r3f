@@ -225,8 +225,8 @@ export default function PlayerCom() {
 
 			if (player2MeshRef.current.isInPositionByTime > 2) {
 				player2MeshRef.current.isInPositionByTime = 0;
-				if (Math.random() < 0.4) {
-					const ballPosition = vec3(ballRef.current?.translation());
+				const ballPosition = vec3(ballRef.current?.translation());
+				if (Math.random() < 0.4 && ballPosition.x > 0) {
 					const aggroDirection = auxVector
 						.subVectors(ballPosition, playerPosition)
 						.normalize()
