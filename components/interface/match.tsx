@@ -10,6 +10,11 @@ import { onClickSound, onHoverSound, playAudio } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import Typewriter from "../ui/typewritter";
 import { useResetPositions } from "@/hooks/useResetPositions";
+import {
+	SDKRewardedBreak,
+	SDKStartGame,
+	SDKStopGame,
+} from "@/lib/game-controll";
 
 export default function Match() {
 	const {
@@ -102,6 +107,7 @@ export default function Match() {
 		playAudio("referee-short");
 		setIsGameEnded(false);
 		setCanPlayersMove(true);
+		SDKStartGame();
 		resetPlayersPosition();
 		ballRef.current?.setLinvel({ x: 0, y: 0, z: 0 }, true);
 		ballRef.current?.setAngvel({ x: 0, y: 0, z: 0 }, true);
@@ -124,6 +130,7 @@ export default function Match() {
 		}
 		playAudio("referee-short");
 		setCanPlayersMove(false);
+		SDKStopGame();
 		resetPlayersPosition();
 		resetBallPosition();
 		setIsGameRunning(false);
@@ -134,8 +141,11 @@ export default function Match() {
 
 	if (gameMode !== "match" && gameMode !== "tournament") return;
 
-	const gameMinutes = Math.floor(gameTime / 60);
-	const gameSeconds = (gameTime % 60).toLocaleString(undefined, {
+	const gameMinutes =
+		Math.floor(gameTime / 60) >= 0 ? Math.floor(gameTime / 60) : 0;
+	const gameSeconds = (
+		gameTime % 60 >= 0 ? gameTime % 60 : 60
+	).toLocaleString(undefined, {
 		minimumIntegerDigits: 2,
 		useGrouping: false,
 	});
@@ -170,6 +180,31 @@ export default function Match() {
 									? "Play next round"
 									: "Go to menu"}
 							</button>
+							{hasLost && tournamentRound > 1 && (
+								<button
+									onClick={() => {
+										SDKRewardedBreak();
+										handleStartGame();
+									}}
+									className="flex items-center gap-1 z-10 border-2 rounded-md bg-orange-500 font-bold text-sm text-gray-100 px-2 mt-2 shadow-md hover:bg-orange-600 uppercase"
+								>
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										fill="none"
+										viewBox="0 0 24 24"
+										strokeWidth={1.5}
+										stroke="currentColor"
+										className="w-5 h-5"
+									>
+										<path
+											strokeLinecap="round"
+											strokeLinejoin="round"
+											d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z"
+										/>
+									</svg>
+									<span>RETRY ROUND</span>
+								</button>
+							)}
 							<div className="relative mt-auto">
 								<svg
 									xmlns="http://www.w3.org/2000/svg"

@@ -1,7 +1,6 @@
-import "./globals.css";
-import { Inter } from "next/font/google";
+"use client";
 
-const inter = Inter({ subsets: ["latin"] });
+import "./globals.css";
 
 export const metadata = {
 	title: "André Elias - Software Engineer",
@@ -9,6 +8,7 @@ export const metadata = {
 };
 
 import { Chakra_Petch } from "next/font/google";
+import Script from "next/script";
 
 const chakraPetch = Chakra_Petch({
 	subsets: ["latin"],
@@ -23,6 +23,10 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<body className={chakraPetch.className}>{children}</body>
+			<Script
+				src="https://game-cdn.poki.com/scripts/v2/poki-sdk.js"
+				strategy="beforeInteractive"
+			/>
 		</html>
 	);
 }

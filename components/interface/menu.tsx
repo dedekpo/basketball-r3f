@@ -3,12 +3,14 @@
 import { useGameStore } from "@/lib/stores";
 import { onClickSound, onHoverSound } from "@/lib/utils";
 import { useProgress } from "@react-three/drei";
-import { isMobile } from "react-device-detect";
 import Image from "next/image";
 import ColorPicker from "../ui/color-picker";
+import { useState } from "react";
+import { SDKFinishLoading, SDKStartGame } from "@/lib/game-controll";
 
 export default function Menu() {
 	const { progress } = useProgress();
+	const [loaded, setLoaded] = useState(false);
 
 	const { gameMode, setGameMode, setCanPlayersMove } = useGameStore(
 		(state) => ({
@@ -21,8 +23,13 @@ export default function Menu() {
 		})
 	);
 
-	if (progress < 100 || gameMode === "loading")
-		return <LoadingScreen progress={progress} setGameMode={setGameMode} />;
+	if (progress < 100) return <LoadingScreen progress={progress} />;
+
+	if (!loaded) {
+		SDKFinishLoading();
+		setLoaded(true);
+		setGameMode("menu");
+	}
 
 	if (gameMode !== "menu") return;
 
@@ -69,6 +76,7 @@ export default function Menu() {
 							onClickSound();
 							setGameMode("challenge");
 							setCanPlayersMove(true);
+							SDKStartGame();
 						}}
 					>
 						<p className="text-right hover:text-[#FE2844] drop-shadow-[0_3px_3px_rgba(43,42,58,1)]">
@@ -81,6 +89,7 @@ export default function Menu() {
 							onClickSound();
 							setGameMode("free");
 							setCanPlayersMove(true);
+							SDKStartGame();
 						}}
 					>
 						<p className="text-right hover:text-[#FE2844] drop-shadow-[0_3px_3px_rgba(43,42,58,1)]">
@@ -104,43 +113,30 @@ export default function Menu() {
 	);
 }
 
-function LoadingScreen({
-	progress,
-	setGameMode,
-}: {
-	progress: number;
-	setGameMode: (
-		newGameMode: "menu" | "challenge" | "free" | "credits" | "loading"
-	) => void;
-}) {
-	function handleStartGame() {
-		onClickSound();
-		setGameMode("menu");
-	}
+function LoadingScreen({ progress }: { progress: number }) {
+	// const toggleFullscreen = () => {
+	// 	if (document.fullscreenElement) {
+	// 		document.exitFullscreen();
+	// 	} else {
+	// 		document.documentElement.requestFullscreen().catch((err) => {
+	// 			console.error("Error toggling fullscreen:", err);
+	// 		});
+	// 	}
+	// };
 
-	const toggleFullscreen = () => {
-		if (document.fullscreenElement) {
-			document.exitFullscreen();
-		} else {
-			document.documentElement.requestFullscreen().catch((err) => {
-				console.error("Error toggling fullscreen:", err);
-			});
-		}
-	};
+	// const checkOrientation = () => {
+	// 	if (window.screen.orientation) {
+	// 		if (!window.screen.orientation.lock) return;
 
-	const checkOrientation = () => {
-		if (window.screen.orientation) {
-			if (!window.screen.orientation.lock) return;
-
-			if (window.screen.orientation.type.includes("portrait")) {
-				window.screen.orientation.lock("landscape").catch((err) => {
-					console.error("Error locking landscape orientation:", err);
-				});
-			} else {
-				window.screen.orientation.unlock();
-			}
-		}
-	};
+	// 		if (window.screen.orientation.type.includes("portrait")) {
+	// 			window.screen.orientation.lock("landscape").catch((err) => {
+	// 				console.error("Error locking landscape orientation:", err);
+	// 			});
+	// 		} else {
+	// 			window.screen.orientation.unlock();
+	// 		}
+	// 	}
+	// };
 
 	return (
 		<div className="absolute flex flex-col items-center justify-center top-0 left-0 h-screen w-screen bg-gray-900 z-50 text-center gap-[50px]">
@@ -152,10 +148,10 @@ function LoadingScreen({
 					className="object-fit object-center"
 				/>
 			</div>
-			{progress < 100 ? (
-				<div className="text-white font-bold text-7xl border-2 py-4 w-[50%]">
-					{progress.toFixed(0)}%
-				</div>
+			<div className="text-white font-bold text-7xl border-2 py-4 w-[50%]">
+				{progress.toFixed(0)}%
+			</div>
+			{/* {progress < 100 ? (
 			) : (
 				<button
 					onPointerEnter={onHoverSound}
@@ -170,7 +166,7 @@ function LoadingScreen({
 				>
 					Play
 				</button>
-			)}
+			)} */}
 		</div>
 	);
 }
